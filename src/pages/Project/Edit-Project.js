@@ -10,7 +10,23 @@ import MapField from "./Map";
 const EditProject = ({ user }) => {
   const [project, setProject] = useState({});
   const [hotspots, setHotspots] = useState([]);
-  const [hotspot, setHotspot] = useState({});
+  const [hotspot, setHotspot] = useState({
+    name: "",
+    hotspot_id: "",
+    position: null,
+    latitude: 0,
+    longitude: 0,
+    overlay: "",
+    virtual_object: "",
+    isSubHotspot: false,
+    panorama_image: "",
+    overlay_size: 10,
+    overlay_offset_x: 0,
+    overlay_offset_y: 0,
+    start_audio: "",
+    main_pages: [],
+    media_pages: [],
+  });
   const [menu, setMenu] = useState([]);
   const { id } = useParams();
 
@@ -638,44 +654,49 @@ const EditProject = ({ user }) => {
             </div>
 
             <div>
-              <div className="pure-control-group required">
-                <label htmlFor="latitude">Latitude</label>
-                <input
-                  type="number"
-                  id="latitude"
-                  placeholder="enter latitude"
-                  min={-90}
-                  max={90}
-                  step={LongLatStep}
-                  value={hotspot.latitude != null ? hotspot.latitude : ""}
-                  onChange={(e) =>
-                    setHotspot({ ...hotspot, latitude: e.target.value })
-                  }
-                />
+              <div className="flex gap-4">
+                <div className="pure-control-group required">
+                  <label htmlFor="latitude">Latitude</label>
+                  <input
+                    type="number"
+                    className="w-full my-2 px-4 py-2 text-xl rounded-lg border focus:ring-2 focus:ring-gray-800 transition duration-200 ease-in-out transform hover:shadow-xl shadow-md"
+                    id="latitude"
+                    placeholder="enter latitude"
+                    min={-90}
+                    max={90}
+                    step={LongLatStep}
+                    value={hotspot.latitude != null ? hotspot.latitude : ""}
+                    onChange={(e) =>
+                      setHotspot({ ...hotspot, latitude: e.target.value })
+                    }
+                  />
+                </div>
+
+                <div className="pure-control-group required">
+                  <label htmlFor="longitude">Longitude</label>
+                  <input
+                    type="number"
+                    className="w-full my-2 px-4 py-2 text-xl rounded-lg border focus:ring-2 focus:ring-gray-800 transition duration-200 ease-in-out transform hover:shadow-xl shadow-md"
+                    id="longitude"
+                    placeholder="enter longitude"
+                    min={-180}
+                    max={80}
+                    step={LongLatStep}
+                    value={hotspot.longitude != null ? hotspot.longitude : ""}
+                    onChange={(e) =>
+                      setHotspot({ ...hotspot, longitude: e.target.value })
+                    }
+                  />
+                </div>
               </div>
 
-              <div className="pure-control-group required">
-                <label htmlFor="longitude">Longitude</label>
-                <input
-                  type="number"
-                  id="longitude"
-                  placeholder="enter longitude"
-                  min={-180}
-                  max={80}
-                  step={LongLatStep}
-                  value={hotspot.longitude != null ? hotspot.longitude : ""}
-                  onChange={(e) =>
-                    setHotspot({ ...hotspot, longitude: e.target.value })
-                  }
-                />
-              </div>
-              {/* <MapField
+              <MapField
                 handleLocation={handleLocation}
                 currentLatitude={hotspot.latitude}
                 currentLongitude={hotspot.longitude}
                 currentMarkerColor={hotspot.pin_color || "add8e6"}
                 handleColor={handleColor}
-              /> */}
+              />
             </div>
           </div>
         </div>

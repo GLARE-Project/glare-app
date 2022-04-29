@@ -3,6 +3,7 @@ import { Map as LeafletMap, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
 import { HexColorPicker, HexColorInput } from "react-colorful";
 import "leaflet/dist/leaflet.css";
+import "../../App.css";
 
 const HotspotMarker = ({ position, color }) => {
   const icon = new L.Icon({
@@ -66,7 +67,7 @@ const MapField = ({
   return (
     <React.Fragment>
       <LeafletMap
-        style={{ height: "20em", margin: "1em 0" }}
+        className="rounded-lg w-full h-60 mb-4"
         center={position}
         zoom={zoom}
         onClick={changeLocation}
@@ -80,9 +81,20 @@ const MapField = ({
         <HotspotMarker color={color} position={position} />
       </LeafletMap>
       <div className="pure-control-group">
-        <label htmlFor={"colorInput"}>Pin Hex Color:</label>
-        <HexColorInput id={"colorInput"} color={color} onChange={changeColor} />
-        <HexColorPicker color={color} onChange={changeColor} />
+        <label className="py-3 text-sm text-gray-600" htmlFor={"colorInput"}>
+          Pin Hex Color:
+        </label>
+        <HexColorInput
+          className="w-full my-2 px-4 py-2 text-xl rounded-lg border focus:ring-2 focus:ring-gray-800 transition duration-200 ease-in-out transform hover:shadow-xl shadow-md"
+          id={"colorInput"}
+          color={color}
+          onChange={changeColor}
+        />
+        <HexColorPicker
+          style={{ width: "auto" }}
+          color={color}
+          onChange={changeColor}
+        />
       </div>
     </React.Fragment>
   );
