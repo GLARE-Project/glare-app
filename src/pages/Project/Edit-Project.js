@@ -237,15 +237,19 @@ const EditProject = ({ user }) => {
     <>
       <div className="w-[90vw] mx-auto mb-8">
         <div className="flex justify-between items-center">
-          <input
-            type="text"
-            className="my-8 px-6 py-4 text-xl rounded-lg border focus:ring-2 focus:ring-gray-800 transition duration-200 ease-in-out transform hover:-translate-y-1 hover:scale-110 hover:shadow-xl shadow-md"
-            placeholder="Project Name"
-            value={project.project_name}
-            onChange={(e) =>
-              setProject({ ...project, project_name: e.target.value })
-            }
-          ></input>
+          <div>
+            <p className="text-sm text-gray-600 pb-2">Project Title</p>
+            <input
+              type="text"
+              className=" px-6 py-4 text-xl rounded-lg border focus:ring-2 focus:ring-gray-800 transition duration-200 ease-in-out transform hover:-translate-y-1 hover:scale-110 hover:shadow-xl shadow-md"
+              placeholder="Project Name"
+              value={project.project_name}
+              onChange={(e) =>
+                setProject({ ...project, project_name: e.target.value })
+              }
+            ></input>
+          </div>
+
           <div className="flex">
             <div className="flex items-center gap-2">
               {project.homepage_image ? (
@@ -350,9 +354,10 @@ const EditProject = ({ user }) => {
           </div>
           <div className="w-[70%] grid grid-cols-2 gap-3">
             <div>
+              <p className="text-sm text-gray-600 pb-2">Hotspot Title</p>
               <input
                 type="text"
-                className="my-8 px-6 py-4 text-xl rounded-lg border focus:ring-2 focus:ring-gray-800 transition duration-200 ease-in-out transform hover:-translate-y-1 hover:scale-110 hover:shadow-xl shadow-md"
+                className="mb-8 px-6 py-4 text-xl rounded-lg border focus:ring-2 focus:ring-gray-800 transition duration-200 ease-in-out transform hover:-translate-y-1 hover:scale-110 hover:shadow-xl shadow-md"
                 placeholder="Project Name"
                 value={hotspot.name}
                 onChange={(e) =>
