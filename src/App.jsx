@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 import Projects from "./pages/Project/Projects";
 import { useState } from "react";
 import EditProject from "./pages/Project/Edit-Project";
+import Viewer from "./pages/Viewer";
 
 export default function App() {
   // eslint-disable-next-line
@@ -16,7 +17,10 @@ export default function App() {
   return (
     <>
       <BrowserRouter>
-        <div className="flex justify-between items-center rounded-lg w-[90vw] mx-auto shadow-lg mt-4 border p-4">
+        <div
+          id="nav"
+          className="flex justify-between items-center rounded-lg w-[90vw] mx-auto shadow-lg mt-4 border p-4"
+        >
           <Link className="font-bold text-2xl" to="/">
             GLARE
           </Link>
@@ -36,6 +40,7 @@ export default function App() {
           </div>
         </div>
         <Routes>
+          <Route path="viewer/:tourid" element={<Viewer />}></Route>
           <Route
             path="/new-projects"
             element={
