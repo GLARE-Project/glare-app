@@ -8,7 +8,7 @@ import Projects from "./pages/Project/Projects";
 import { useState } from "react";
 import EditProject from "./pages/Project/Edit-Project";
 
-function App() {
+export default function App() {
   // eslint-disable-next-line
   const [{ user, isLoading, isError }, dispatch] = useGetUser();
   const [project, setProject] = useState();
@@ -97,5 +97,3 @@ function App() {
     </>
   );
 }
-
-export default App;
