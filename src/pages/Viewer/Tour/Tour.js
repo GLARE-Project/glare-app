@@ -26,7 +26,7 @@ const Loader = () => {
   } else return null;
 };
 
-const Tour = ({ hotspot, onCampus, projectId }) => {
+const Tour = ({ hotspot, onCampus, projectId, setPage }) => {
   const query = new URLSearchParams(useLocation().search);
   const INITIAL_STATE = { name: "", start_audio: "" };
 
@@ -65,6 +65,7 @@ const Tour = ({ hotspot, onCampus, projectId }) => {
         menuModalIsOpen={menuModalIsOpen}
         setMenuIsOpen={setMenuIsOpen}
         projectId={projectId}
+        setPage={setPage}
       >
         {onCampus && (
           <video

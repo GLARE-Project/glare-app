@@ -8,6 +8,7 @@ import Intro from "./Viewer/Intro";
 import Home from "./Viewer/Home";
 import Map from "./Viewer/Map";
 import Tour from "./Viewer/Tour/Tour";
+import Main from "./Viewer/Tour/Main";
 
 const Viewer = () => {
   const { tourid } = useParams();
@@ -15,6 +16,7 @@ const Viewer = () => {
   const [hotspots, setHotspots] = useState([]);
   const [onCampus, setOnCampus] = useState();
   const [hotspot, setHotspot] = useState();
+  const [page, setPage] = useState();
 
   useEffect(() => {
     const getProject = async () => {
@@ -115,23 +117,14 @@ const Viewer = () => {
               setOnCampus={setOnCampus}
               hotspot={hotspot}
               setCurrentHotspot={setCurrentHotspot}
+              page={page}
+              setPage={setPage}
             />
           }
         />
         <Route
           path="/media/:media"
-          element={
-            <Tour
-              projectId={project.$id}
-              project={project}
-              checkCamera={checkCamera}
-              checkPos={checkPos}
-              onCampus={onCampus}
-              setOnCampus={setOnCampus}
-              hotspot={hotspot}
-              setCurrentHotspot={setCurrentHotspot}
-            />
-          }
+          element={<Main projectId={project.$id} page={page} />}
         />
       </Routes>
     </>

@@ -16,6 +16,7 @@ const MenuOverlay = ({
   menuModalIsOpen,
   setMenuIsOpen,
   projectId,
+  setPage,
 }) => {
   const menu = hotspot.main_pages;
   const library = hotspot.media_pages;
@@ -25,6 +26,11 @@ const MenuOverlay = ({
   function closeModal() {
     setMenuIsOpen(false);
   }
+
+  const page = (hotspot) => {
+    setPage(hotspot);
+    navigate(`/viewer/${projectId}/media/${hotspot.title}`);
+  };
 
   return (
     <>
@@ -49,9 +55,7 @@ const MenuOverlay = ({
               {menu?.map((item) => (
                 <div
                   className="border p-4 rounded-lg cursor-pointer"
-                  onClick={() =>
-                    navigate(`/viewer/${projectId}/media/${item.title}`)
-                  }
+                  onClick={() => page(item)}
                 >
                   <p className="text-lg font-bold">{item.title}</p>
                 </div>
