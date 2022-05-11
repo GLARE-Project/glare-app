@@ -6,6 +6,7 @@ import { MinusCircleIcon, PlusCircleIcon } from "@heroicons/react/solid";
 import ShortUniqueId from "short-unique-id";
 import Menu from "./Menu";
 import MapField from "./Map";
+import Nav from "../../nav";
 
 const EditProject = ({ user }) => {
   const [project, setProject] = useState({});

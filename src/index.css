@@ -19,3 +19,15 @@ code {
 .resposive .react-colorful {
   width: auto;
 }
+
+.leaflet-control-container {
+  height: 100vh;
+}
+
+#canvas {
+  position: absolute !important;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+}

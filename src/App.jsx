@@ -8,6 +8,8 @@ import Projects from "./pages/Project/Projects";
 import { useState } from "react";
 import EditProject from "./pages/Project/Edit-Project";
 import Viewer from "./pages/Viewer";
+import Intro from "./pages/Viewer/Intro";
+import Nav from "./nav";
 
 export default function App() {
   // eslint-disable-next-line
@@ -17,40 +19,20 @@ export default function App() {
   return (
     <>
       <BrowserRouter>
-        <div
-          id="nav"
-          className="flex justify-between items-center rounded-lg w-[90vw] mx-auto shadow-lg mt-4 border p-4"
-        >
-          <Link className="font-bold text-2xl" to="/">
-            GLARE
-          </Link>
-          <div>
-            <Link
-              className="text-gray-600 font-semibold hover:text-blue-400 pr-6"
-              to="/projects"
-            >
-              My Projects
-            </Link>
-            <Link
-              to="/new-projects"
-              className="mx-auto mt-4 py-3 px-6 font-semibold text-md rounded-lg shadow-md bg-white text-gray-900 border border-gray-900 hover:border-transparent hover:text-white hover:bg-gray-900 focus:outline-none"
-            >
-              New Project
-            </Link>
-          </div>
-        </div>
         <Routes>
-          <Route path="viewer/:tourid" element={<Viewer />}></Route>
+          <Route path="viewer/:tourid/*" element={<Viewer />}></Route>
           <Route
             path="/new-projects"
             element={
               user ? (
-                <Project
-                  project={project}
-                  setProject={setProject}
-                  user={user}
-                  dispatch={dispatch}
-                />
+                <Nav>
+                  <Project
+                    project={project}
+                    setProject={setProject}
+                    user={user}
+                    dispatch={dispatch}
+                  />
+                </Nav>
               ) : (
                 <Navigate to="/login" replace />
               )
@@ -60,12 +42,14 @@ export default function App() {
             path="/projects"
             element={
               user ? (
-                <Projects
-                  user={user}
-                  project={project}
-                  setProject={setProject}
-                  dispatch={dispatch}
-                />
+                <Nav>
+                  <Projects
+                    user={user}
+                    project={project}
+                    setProject={setProject}
+                    dispatch={dispatch}
+                  />
+                </Nav>
               ) : (
                 <Navigate to="/login" replace />
               )
@@ -75,12 +59,14 @@ export default function App() {
             path="/edit/:id"
             element={
               user ? (
-                <EditProject
-                  user={user}
-                  project={project}
-                  setProject={setProject}
-                  dispatch={dispatch}
-                />
+                <Nav>
+                  <EditProject
+                    user={user}
+                    project={project}
+                    setProject={setProject}
+                    dispatch={dispatch}
+                  />
+                </Nav>
               ) : (
                 <Navigate to="/login" replace />
               )
@@ -96,7 +82,15 @@ export default function App() {
               )
             }
           ></Route>
-          <Route exact path="/" element={<Landing />}></Route>
+          <Route
+            exact
+            path="/"
+            element={
+              <Nav>
+                <Landing />
+              </Nav>
+            }
+          ></Route>
         </Routes>
       </BrowserRouter>
     </>

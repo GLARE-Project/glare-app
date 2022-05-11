@@ -1,80 +1,22 @@
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useEffect, useState, useCallback } from "react";
+import { Outlet, useParams } from "react-router-dom";
 import api from "../api/api";
 import { Server } from "../utils/config";
 import "./Viewer/viewer.css";
-import { Link } from "react-router-dom";
-import { Rehowl, Play } from "rehowl";
-import screenfull from "screenfull";
-
-function setUpDeviceMotion() {
-  // To make sure the device supports DeviceMotionEvent and can request it
-  // Must check for Sarafi
-  if (
-    typeof DeviceMotionEvent !== "undefined" &&
-    typeof DeviceMotionEvent.requestPermission === "function"
-  ) {
-    // iOS 13+
-    DeviceOrientationEvent.requestPermission()
-      .then((response) => {
-        if (response !== "granted") {
-          // permission not granted
-          alert(
-            "Motion access is required to view this site, Please delete your website cache in Settings -> Safari and reload."
-          );
-        }
-      })
-      .catch(console.warn);
-  }
-}
-
-function setFullScreen() {
-  if (screenfull.isEnabled) {
-    screenfull.request();
-  }
-
-  scrollToTop();
-  scrollToBottom();
-}
-
-function setOrientation() {
-  if (typeof window.screen.orientation !== "undefined") {
-    var locOrientation =
-      window.screen.lockOrientation ||
-      window.ScreenOrientation ||
-      window.screen.msLockOrientation ||
-      window.screen.orientation.lock ||
-      null;
-    if (locOrientation === window.ScreenOrientation) {
-      console.log("Firefox detected - lack of orientation support");
-    } else if (locOrientation.call(window.screen.orientation, "landscape")) {
-    } else {
-      console.warn("There was a problem in locking the orientation");
-    }
-  } else {
-    console.warn("Screen Orientation not supported");
-    // if mobile we can use CSS to rotate or a splash screen to let the user to know
-    document.querySelector("html").classList.add("ios-cant-orient");
-  }
-}
-
-function scrollToTop() {
-  window.scrollTo(0, 0);
-  window.scrollTo(0, 1);
-}
-
-function scrollToBottom() {
-  window.scrollTo(0, document.body.scrollHeight);
-}
+import { Routes, Route } from "react-router-dom";
+import Intro from "./Viewer/Intro";
+import Home from "./Viewer/Home";
+import Map from "./Viewer/Map";
+import Tour from "./Viewer/Tour/Tour";
 
 const Viewer = () => {
   const { tourid } = useParams();
   const [project, setProject] = useState({});
   const [hotspots, setHotspots] = useState([]);
+  const [onCampus, setOnCampus] = useState();
+  const [hotspot, setHotspot] = useState();
 
   useEffect(() => {
-    setOrientation();
-
     const getProject = async () => {
       let response = await api.getDocument(Server.collectionID, tourid);
       setProject(response);
@@ -87,32 +29,112 @@ const Viewer = () => {
     getProject();
   }, []);
 
-  function handleClick() {
-    setFullScreen();
-    setUpDeviceMotion();
-  }
+  const setCurrentHotspot = (clickedHotspot) => {
+    setHotspot(clickedHotspot);
+  };
+
+  const checkCamera = useCallback(() => {
+    // check to see if the devices are undefine
+    if (!!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) {
+      navigator.mediaDevices
+        .getUserMedia({
+          audio: false,
+          video:
+            process.env.NODE_ENV === "production"
+              ? {
+                  facingMode: {
+                    exact: "environment", // the front camera, if prefered
+                  },
+                }
+              : {},
+          // if constains don't pass for camera and is production - it isn't on campus
+        })
+        .catch((err) => {
+          setOnCampus(false);
+        });
+    } else {
+      setOnCampus(false);
+    }
+  }, [setOnCampus]);
+
+  const checkPos = useCallback(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.watchPosition(
+        () => setOnCampus(true),
+        () => setOnCampus(false),
+        {
+          enableHighAccuracy: true,
+          timeout: Infinity,
+          maximumAge: 0,
+        }
+      );
+    } else {
+      setOnCampus(false);
+    }
+  }, [setOnCampus]);
 
   return (
-    <div
-      className="w-screen h-screen grid justify-center items-center "
-      style={{ background: `url(${project.homepage_image})` }}
-    >
-      {project.intro_audio && (
-        <Rehowl src={project.intro_audio} format={["mp4"]}>
-          {({ howl }) => <Play howl={howl} />}
-        </Rehowl>
-      )}
-      <h1 className="font-bold drop-shadow-3xl text-center text-white text-6xl">
-        {project.project_name}
-      </h1>
-      <Link
-        className="font-bold drop-shadow-3xl text-center text-white text-6xl"
-        to=""
-        onClick={() => handleClick()}
-      >
-        Begin Tour
-      </Link>
-    </div>
+    <>
+      <Routes>
+        <Route index element={<Home project={project} />} />
+        <Route
+          path="intro"
+          element={
+            <Intro
+              project={project}
+              checkCamera={checkCamera}
+              checkPos={checkPos}
+              onCampus={onCampus}
+              setOnCampus={setOnCampus}
+            />
+          }
+        />
+        <Route
+          path="map"
+          element={
+            <Map
+              projectId={project.$id}
+              checkCamera={checkCamera}
+              checkPos={checkPos}
+              onCampus={onCampus}
+              setOnCampus={setOnCampus}
+              hotspots={hotspots}
+              setCurrentHotspot={setCurrentHotspot}
+            />
+          }
+        />
+        <Route
+          path=":tourname"
+          element={
+            <Tour
+              projectId={project.$id}
+              project={project}
+              checkCamera={checkCamera}
+              checkPos={checkPos}
+              onCampus={onCampus}
+              setOnCampus={setOnCampus}
+              hotspot={hotspot}
+              setCurrentHotspot={setCurrentHotspot}
+            />
+          }
+        />
+        <Route
+          path=":media"
+          element={
+            <Tour
+              projectId={project.$id}
+              project={project}
+              checkCamera={checkCamera}
+              checkPos={checkPos}
+              onCampus={onCampus}
+              setOnCampus={setOnCampus}
+              hotspot={hotspot}
+              setCurrentHotspot={setCurrentHotspot}
+            />
+          }
+        />
+      </Routes>
+    </>
   );
 };
 
