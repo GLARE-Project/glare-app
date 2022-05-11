@@ -64,6 +64,7 @@ const Tour = ({ hotspot, onCampus, projectId }) => {
         hotspot={hotspot}
         menuModalIsOpen={menuModalIsOpen}
         setMenuIsOpen={setMenuIsOpen}
+        projectId={projectId}
       >
         {onCampus && (
           <video

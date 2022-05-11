@@ -1,7 +1,7 @@
 export const Server = {
-  endpoint: `http://localhost/v1`,
-  project: `622146c2ef811bfa8bf3`,
-  collectionID: `62262d89c10f93528578`,
-  imageBucketID: `622ad462641af6b457df`,
-  audioBucketID: `622ad3bdad1e31253be5`,
+  endpoint: process.env.REACT_APP_ENDPOINT,
+  project: process.env.REACT_APP_PROJECT,
+  collectionID: process.env.REACT_APP_COLLECTION_ID,
+  imageBucketID: process.env.REACT_APP_IMAGE_ID,
+  audioBucketID: process.env.REACT_APP_AUDIO_ID,
 };

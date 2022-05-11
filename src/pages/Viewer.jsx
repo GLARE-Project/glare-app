@@ -119,7 +119,7 @@ const Viewer = () => {
           }
         />
         <Route
-          path=":media"
+          path="/media/:media"
           element={
             <Tour
               projectId={project.$id}

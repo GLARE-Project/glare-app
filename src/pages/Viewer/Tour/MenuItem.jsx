@@ -1,6 +1,7 @@
 import Modal from "react-modal";
 import { useState } from "react";
 import { XCircleIcon } from "@heroicons/react/solid";
+import { useNavigate } from "react-router-dom";
 
 const customStyles = {
   content: {
@@ -9,9 +10,17 @@ const customStyles = {
   },
 };
 
-const MenuOverlay = ({ hotspot, children, menuModalIsOpen, setMenuIsOpen }) => {
+const MenuOverlay = ({
+  hotspot,
+  children,
+  menuModalIsOpen,
+  setMenuIsOpen,
+  projectId,
+}) => {
   const menu = hotspot.main_pages;
   const library = hotspot.media_pages;
+
+  const navigate = useNavigate();
 
   function closeModal() {
     setMenuIsOpen(false);
@@ -38,7 +47,12 @@ const MenuOverlay = ({ hotspot, children, menuModalIsOpen, setMenuIsOpen }) => {
           <div className="grid grid-cols-2 gap-6 h-3/4 pt-6">
             <div className="border rounded-lg p-10 flex flex-col gap-4">
               {menu?.map((item) => (
-                <div className="border p-4 rounded-lg">
+                <div
+                  className="border p-4 rounded-lg cursor-pointer"
+                  onClick={() =>
+                    navigate(`/viewer/${projectId}/media/${item.title}`)
+                  }
+                >
                   <p className="text-lg font-bold">{item.title}</p>
                 </div>
               ))}
