@@ -28,9 +28,27 @@ const Project = ({ user, dispatch, project, setProject }) => {
     );
 
     let imageURL = await api.getMedia(Server.imageBucketID, response.$id);
+
+    const hotspot = JSON.stringify({
+      name: "",
+      hotspot_id: "",
+      position: null,
+      latitude: 0,
+      longitude: 0,
+      overlay: "",
+      virtual_object: "",
+      isSubHotspot: false,
+      panorama_image: "",
+      overlay_size: 10,
+      overlay_offset_x: 0,
+      overlay_offset_y: 0,
+      start_audio: "",
+      main_pages: [],
+      media_pages: [],
+    });
     
 
-    const imageP = { ...currentProject, homepage_image: imageURL.href};
+    const imageP = { ...currentProject, homepage_image: imageURL.href, hotspots: [hotspot] };
 
     console.log(imageP);
 
