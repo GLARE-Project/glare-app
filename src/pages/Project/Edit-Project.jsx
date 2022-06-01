@@ -37,12 +37,13 @@ const EditProject = ({ user }) => {
     const getProject = async () => {
       let response = await api.getDocument(Server.collectionID, id);
       setProject(response);
-      console.log(response.hotspots);
+      console.log(response);
       const exisitingHotspots = response.hotspots?.map((h) => JSON.parse(h));
       console.log(exisitingHotspots);
       await setProject({ ...response, hotspots: exisitingHotspots });
       await setHotspots(exisitingHotspots);
       await setHotspot(exisitingHotspots[0]);
+
     };
     getProject();
   }, []);
@@ -147,7 +148,7 @@ const EditProject = ({ user }) => {
   const createHotspot = () => {
     const newHotspot = {
       // location related
-      name: "",
+      name: "New hotspot",
       hotspot_id: uid(),
       position: null,
       latitude: 0,
@@ -237,12 +238,12 @@ const EditProject = ({ user }) => {
   return (
     <>
       <div className="w-[90vw] mx-auto mb-8">
-        <div className="flex justify-between items-center">
+        <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm text-gray-600 pb-2">Project Title</p>
+            <p className="pb-2 text-sm text-gray-600">Project Title</p>
             <input
               type="text"
-              className=" px-6 py-4 text-xl rounded-lg border focus:ring-2 focus:ring-gray-800 transition duration-200 ease-in-out transform hover:-translate-y-1 hover:scale-110 hover:shadow-xl shadow-md"
+              className="px-6 py-4 text-xl transition duration-200 ease-in-out transform border rounded-lg shadow-md focus:ring-2 focus:ring-gray-800 hover:-translate-y-1 hover:scale-110 hover:shadow-xl"
               placeholder="Project Name"
               value={project.project_name}
               onChange={(e) =>
@@ -255,14 +256,14 @@ const EditProject = ({ user }) => {
             <div className="flex items-center gap-2">
               {project.homepage_image ? (
                 <img
-                  className="rounded-lg shadow-lg border my-6 w-40"
+                  className="w-40 my-6 border rounded-lg shadow-lg"
                   src={project.homepage_image}
                 />
               ) : (
                 <></>
               )}
               <div>
-                <p className="pb-3 text-sm text-gray-600 pl-2">
+                <p className="pb-3 pl-2 text-sm text-gray-600">
                   Homepage Image
                 </p>
                 <input
@@ -270,12 +271,7 @@ const EditProject = ({ user }) => {
                   id="homepage_image"
                   accept="image/*"
                   name="homepage_image"
-                  className="block w-full text-sm text-slate-500
-      file:mr-4 file:py-2 file:px-4
-      file:rounded-full file:border-0
-      file:text-sm file:font-semibold
-      file:bg-sky-50 file:text-sky-700
-      hover:file:bg-sky-100"
+                  className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-sky-50 file:text-sky-700 hover:file:bg-sky-100"
                   onChange={(e) =>
                     updateMedia(
                       Server.imageBucketID,
@@ -290,7 +286,7 @@ const EditProject = ({ user }) => {
             <div className="flex items-center gap-2">
               {project.intro_audio ? (
                 <audio
-                  className="rounded-full shadow-lg border my-6 w-44"
+                  className="my-6 border rounded-full shadow-lg w-44"
                   controls
                 >
                   <source src={project.intro_audio} />
@@ -299,18 +295,13 @@ const EditProject = ({ user }) => {
                 <></>
               )}
               <div>
-                <p className="pb-3 text-sm text-gray-600 pl-2">Intro Audio</p>
+                <p className="pb-3 pl-2 text-sm text-gray-600">Intro Audio</p>
                 <input
                   type="file"
                   id="intro_audio"
                   accept="audio/*"
                   name="intro_audio"
-                  className="block w-full text-sm text-slate-500
-      file:mr-4 file:py-2 file:px-4
-      file:rounded-full file:border-0
-      file:text-sm file:font-semibold
-      file:bg-sky-50 file:text-sky-700
-      hover:file:bg-sky-100"
+                  className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-sky-50 file:text-sky-700 hover:file:bg-sky-100"
                   onChange={(e) =>
                     updateMedia(
                       Server.audioBucketID,
@@ -324,19 +315,19 @@ const EditProject = ({ user }) => {
             </div>
           </div>
         </div>
-        <div className="flex pt-4 gap-4">
+        <div className="flex gap-4 pt-4">
           <div className="w-[30%] border-2 rounded-lg p-3">
-            <div className="flex justify-between items-center">
+            <div className="flex items-center justify-between">
               <p className="text-2xl font-bold uppercase">Hotspots</p>
               <button onClick={() => createHotspot()}>
                 <PlusCircleIcon className="w-8 hover:text-blue-400" />
               </button>
             </div>
-            <div className="pt-6 grid grid-cols-1 gap-2">
+            <div className="grid grid-cols-1 gap-2 pt-6">
               {hotspots?.map((innerHotspot, index) => (
                 <div
                   key={index}
-                  className="border flex p-4 rounded-lg justify-between"
+                  className="flex justify-between p-4 border rounded-lg"
                   onClick={() => selectHotspot(innerHotspot)}
                 >
                   <h4>{innerHotspot.name}</h4>
@@ -355,10 +346,10 @@ const EditProject = ({ user }) => {
           </div>
           <div className="w-[70%] grid grid-cols-2 gap-3">
             <div>
-              <p className="text-sm text-gray-600 pb-2">Hotspot Title</p>
+              <p className="pb-2 text-sm text-gray-600">Hotspot Title</p>
               <input
                 type="text"
-                className="mb-8 px-6 py-4 text-xl rounded-lg border focus:ring-2 focus:ring-gray-800 transition duration-200 ease-in-out transform hover:-translate-y-1 hover:scale-110 hover:shadow-xl shadow-md"
+                className="px-6 py-4 mb-8 text-xl transition duration-200 ease-in-out transform border rounded-lg shadow-md focus:ring-2 focus:ring-gray-800 hover:-translate-y-1 hover:scale-110 hover:shadow-xl"
                 placeholder="Project Name"
                 value={hotspot.name}
                 onChange={(e) =>
@@ -367,12 +358,12 @@ const EditProject = ({ user }) => {
               ></input>
               <div className="grid grid-cols-2 gap-3 pb-6">
                 <div>
-                  <p className="pb-1 text-sm text-gray-600 pl-2">
+                  <p className="pb-1 pl-2 text-sm text-gray-600">
                     Overlay Image
                   </p>
                   {hotspot.overlay ? (
                     <img
-                      className="rounded-lg shadow-lg border my-3"
+                      className="my-3 border rounded-lg shadow-lg"
                       src={hotspot.overlay}
                     />
                   ) : (
@@ -383,12 +374,7 @@ const EditProject = ({ user }) => {
                     id="overlay"
                     accept="image/*"
                     name="overlay"
-                    className="block w-full text-sm text-slate-500
-      file:mr-4 file:py-2 file:px-4
-      file:rounded-full file:border-0
-      file:text-sm file:font-semibold
-      file:bg-sky-50 file:text-sky-700
-      hover:file:bg-sky-100"
+                    className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-sky-50 file:text-sky-700 hover:file:bg-sky-100"
                     onChange={(e) =>
                       newMedia(
                         Server.imageBucketID,
@@ -399,12 +385,12 @@ const EditProject = ({ user }) => {
                   />
                 </div>
                 <div>
-                  <p className="pb-1 text-sm text-gray-600 pl-2">
+                  <p className="pb-1 pl-2 text-sm text-gray-600">
                     Panorama Image
                   </p>
                   {hotspot.overlay ? (
                     <img
-                      className="rounded-lg shadow-lg border my-3"
+                      className="my-3 border rounded-lg shadow-lg"
                       src={hotspot.panorama_image}
                     />
                   ) : (
@@ -415,12 +401,7 @@ const EditProject = ({ user }) => {
                     id="panorama_image"
                     accept="image/*"
                     name="panorama_image"
-                    className="block w-full text-sm text-slate-500
-      file:mr-4 file:py-2 file:px-4
-      file:rounded-full file:border-0
-      file:text-sm file:font-semibold
-      file:bg-sky-50 file:text-sky-700
-      hover:file:bg-sky-100"
+                    className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-sky-50 file:text-sky-700 hover:file:bg-sky-100"
                     onChange={(e) =>
                       newMedia(
                         Server.imageBucketID,
@@ -433,10 +414,10 @@ const EditProject = ({ user }) => {
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <p className="pb-1 text-sm text-gray-600 pl-2">3D object</p>
+                  <p className="pb-1 pl-2 text-sm text-gray-600">3D object</p>
                   {hotspot.virtual_object ? (
                     <img
-                      className="rounded-lg shadow-lg border my-3"
+                      className="my-3 border rounded-lg shadow-lg"
                       src={hotspot.virtual_object}
                     />
                   ) : (
@@ -447,12 +428,7 @@ const EditProject = ({ user }) => {
                     id="virtual_object"
                     accept="image/*"
                     name="virtual_object"
-                    className="block w-full text-sm text-slate-500
-      file:mr-4 file:py-2 file:px-4
-      file:rounded-full file:border-0
-      file:text-sm file:font-semibold
-      file:bg-sky-50 file:text-sky-700
-      hover:file:bg-sky-100"
+                    className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-sky-50 file:text-sky-700 hover:file:bg-sky-100"
                     onChange={(e) =>
                       newMedia(
                         Server.imageBucketID,
@@ -463,7 +439,7 @@ const EditProject = ({ user }) => {
                   />
                 </div>
                 <div>
-                  <p className="pb-1 text-sm text-gray-600 pl-2">
+                  <p className="pb-1 pl-2 text-sm text-gray-600">
                     Narration Audio
                   </p>
                   {hotspot.start_audio ? (
@@ -481,12 +457,7 @@ const EditProject = ({ user }) => {
                     id="start_audio"
                     accept="audio/*"
                     name="start_audio"
-                    className="block w-full text-sm text-slate-500
-      file:mr-4 file:py-2 file:px-4
-      file:rounded-full file:border-0
-      file:text-sm file:font-semibold
-      file:bg-sky-50 file:text-sky-700
-      hover:file:bg-sky-100"
+                    className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-sky-50 file:text-sky-700 hover:file:bg-sky-100"
                     onChange={(e) =>
                       newMedia(
                         Server.audioBucketID,
@@ -497,14 +468,14 @@ const EditProject = ({ user }) => {
                   />
                 </div>
               </div>
-              <div className="border-2 rounded-lg p-3 mt-4">
-                <div className="flex justify-between items-center">
+              <div className="p-3 mt-4 border-2 rounded-lg">
+                <div className="flex items-center justify-between">
                   <p className="text-xl font-bold uppercase">Menu</p>
                   <button onClick={() => newMenuItem()}>
                     <PlusCircleIcon className="w-6 hover:text-blue-400" />
                   </button>
                 </div>
-                <div className="pt-6 grid grid-cols-1 gap-2">
+                <div className="grid grid-cols-1 gap-2 pt-6">
                   <div class="accordion" id="accordionExample">
                     {menu?.map((innerMenu) => (
                       <div
@@ -549,7 +520,7 @@ const EditProject = ({ user }) => {
                           <div class="accordion-body py-4 px-5">
                             <input
                               type="text"
-                              className="w-full my-2 px-4 py-2 text-xl rounded-lg border focus:ring-2 focus:ring-gray-800 transition duration-200 ease-in-out transform hover:shadow-xl shadow-md"
+                              className="w-full px-4 py-2 my-2 text-xl transition duration-200 ease-in-out transform border rounded-lg shadow-md focus:ring-2 focus:ring-gray-800 hover:shadow-xl"
                               placeholder="Menu Title"
                               value={innerMenu.title}
                               onChange={(e) =>
@@ -562,7 +533,7 @@ const EditProject = ({ user }) => {
                             ></input>
                             <textarea
                               type="text"
-                              className="w-full my-2 px-4 py-2 text-md rounded-lg border focus:ring-2 focus:ring-gray-800 transition duration-200 ease-in-out transform hover:shadow-xl shadow-md"
+                              className="w-full px-4 py-2 my-2 transition duration-200 ease-in-out transform border rounded-lg shadow-md text-md focus:ring-2 focus:ring-gray-800 hover:shadow-xl"
                               placeholder="Description"
                               value={innerMenu.description}
                               onChange={(e) =>
@@ -573,12 +544,12 @@ const EditProject = ({ user }) => {
                                 )
                               }
                             ></textarea>
-                            <p className="text-sm text-gray-600 pl-2">
+                            <p className="pl-2 text-sm text-gray-600">
                               Background Image
                             </p>
                             {innerMenu.background_image ? (
                               <img
-                                className="rounded-lg shadow-lg border my-4 w-full"
+                                className="w-full my-4 border rounded-lg shadow-lg"
                                 src={innerMenu.background_image}
                               />
                             ) : (
@@ -589,12 +560,7 @@ const EditProject = ({ user }) => {
                               id="background_image"
                               accept="image/*"
                               name="background_image"
-                              className="block w-full text-sm text-slate-500
-      file:mr-4 file:py-2 file:px-4
-      file:rounded-full file:border-0
-      file:text-sm file:font-semibold
-      file:bg-sky-50 file:text-sky-700
-      hover:file:bg-sky-100"
+                              className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-sky-50 file:text-sky-700 hover:file:bg-sky-100"
                               onChange={(e) =>
                                 updateMenuMedia(
                                   Server.imageBucketID,
@@ -604,7 +570,7 @@ const EditProject = ({ user }) => {
                                 )
                               }
                             />
-                            <p className="py-3 text-sm text-gray-600 pl-2">
+                            <p className="py-3 pl-2 text-sm text-gray-600">
                               Narration Audio
                             </p>
                             {innerMenu.descriptive_audio ? (
@@ -622,12 +588,7 @@ const EditProject = ({ user }) => {
                               id="start_audio"
                               accept="audio/*"
                               name="start_audio"
-                              className="block w-full text-sm text-slate-500
-      file:mr-4 file:py-2 file:px-4
-      file:rounded-full file:border-0
-      file:text-sm file:font-semibold
-      file:bg-sky-50 file:text-sky-700
-      hover:file:bg-sky-100"
+                              className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-sky-50 file:text-sky-700 hover:file:bg-sky-100"
                               onChange={(e) =>
                                 updateMenuMedia(
                                   Server.audioBucketID,
@@ -638,7 +599,7 @@ const EditProject = ({ user }) => {
                               }
                             />
                             <button
-                              className="flex items-center gap-1 mx-auto mt-4 py-2 px-4 font-semibold text-md rounded-lg shadow-md bg-white text-gray-900 border border-gray-900 hover:border-transparent hover:text-white hover:bg-gray-900 focus:outline-none"
+                              className="flex items-center gap-1 px-4 py-2 mx-auto mt-4 font-semibold text-gray-900 bg-white border border-gray-900 rounded-lg shadow-md text-md hover:border-transparent hover:text-white hover:bg-gray-900 focus:outline-none"
                               onClick={() =>
                                 setMenu((menu) =>
                                   menu.filter(
@@ -665,7 +626,7 @@ const EditProject = ({ user }) => {
                   <label htmlFor="latitude">Latitude</label>
                   <input
                     type="number"
-                    className="w-full my-2 px-4 py-2 text-xl rounded-lg border focus:ring-2 focus:ring-gray-800 transition duration-200 ease-in-out transform hover:shadow-xl shadow-md"
+                    className="w-full px-4 py-2 my-2 text-xl transition duration-200 ease-in-out transform border rounded-lg shadow-md focus:ring-2 focus:ring-gray-800 hover:shadow-xl"
                     id="latitude"
                     placeholder="enter latitude"
                     min={-90}
@@ -682,7 +643,7 @@ const EditProject = ({ user }) => {
                   <label htmlFor="longitude">Longitude</label>
                   <input
                     type="number"
-                    className="w-full my-2 px-4 py-2 text-xl rounded-lg border focus:ring-2 focus:ring-gray-800 transition duration-200 ease-in-out transform hover:shadow-xl shadow-md"
+                    className="w-full px-4 py-2 my-2 text-xl transition duration-200 ease-in-out transform border rounded-lg shadow-md focus:ring-2 focus:ring-gray-800 hover:shadow-xl"
                     id="longitude"
                     placeholder="enter longitude"
                     min={-180}
