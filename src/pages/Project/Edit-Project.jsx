@@ -351,7 +351,7 @@ const EditProject = ({ user }) => {
                 type="text"
                 className="px-6 py-4 mb-8 text-xl transition duration-200 ease-in-out transform border rounded-lg shadow-md focus:ring-2 focus:ring-gray-800 hover:-translate-y-1 hover:scale-110 hover:shadow-xl"
                 placeholder="Project Name"
-                value={hotspot.name}
+                value={hotspot.name === undefined ? "Create New Hotspot" : hotspot.name}
                 onChange={(e) =>
                   setHotspot({ ...hotspot, name: e.target.value })
                 }
@@ -365,6 +365,7 @@ const EditProject = ({ user }) => {
                     <img
                       className="my-3 border rounded-lg shadow-lg"
                       src={hotspot.overlay}
+                      alt=""
                     />
                   ) : (
                     <></>
