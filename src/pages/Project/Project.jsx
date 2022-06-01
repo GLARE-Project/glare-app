@@ -86,7 +86,7 @@ const Project = ({ user, dispatch, project, setProject }) => {
         [`user:${user["$id"]}`]
       );
       setStale({ stale: true });
-      navigate(`/projects`);
+      navigate(`/edit/${docRespo.$id}`);
     } catch (e) {
       console.log("Error in adding project");
     }
