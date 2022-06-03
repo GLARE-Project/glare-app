@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import api from "../../api/api";
 import { Server } from "../../utils/config";
 import { MinusCircleIcon, PlusCircleIcon } from "@heroicons/react/solid";
+import { SaveIcon } from "@heroicons/react/outline";
 import ShortUniqueId from "short-unique-id";
 import Menu from "./Menu";
 import MapField from "./Map";
@@ -12,7 +13,7 @@ const EditProject = ({ user }) => {
   const [project, setProject] = useState({});
   const [hotspots, setHotspots] = useState([]);
   const [hotspot, setHotspot] = useState({
-    name: "",
+    name: "Create Hotspot",
     hotspot_id: "",
     position: null,
     latitude: 0,
@@ -28,8 +29,10 @@ const EditProject = ({ user }) => {
     main_pages: [],
     media_pages: [],
   });
+  const [activeHotspot, setActiveHotspot] = useState(null);
   const [menu, setMenu] = useState([]);
   const { id } = useParams();
+  const [saved, setSaved] = useState(true);
 
   const LongLatStep = 0.0001;
 
@@ -37,32 +40,34 @@ const EditProject = ({ user }) => {
     const getProject = async () => {
       let response = await api.getDocument(Server.collectionID, id);
       setProject(response);
-      console.log(response);
       const exisitingHotspots = response.hotspots?.map((h) => JSON.parse(h));
-      console.log(exisitingHotspots);
       await setProject({ ...response, hotspots: exisitingHotspots });
       await setHotspots(exisitingHotspots);
       await setHotspot(exisitingHotspots[0]);
-
+      console.log(hotspot)
     };
     getProject();
   }, []);
 
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     console.log("project update");
+  //     console.log(project);
+  //     const update = async () => {
+  //       await api.updateDocument(
+  //         Server.collectionID,
+  //         id,
+  //         project,
+  //         [`role:all`],
+  //         [`user:${user["$id"]}`]
+  //       );
+  //     };
+  //     update();
+  //   }, 1000);
+  // }, [project]);
+
   useEffect(() => {
-    setTimeout(() => {
-      console.log("project update");
-      console.log(project);
-      const update = async () => {
-        await api.updateDocument(
-          Server.collectionID,
-          id,
-          project,
-          [`role:all`],
-          [`user:${user["$id"]}`]
-        );
-      };
-      update();
-    }, 1000);
+    setSaved(false);
   }, [project]);
 
   useEffect(() => {
@@ -77,7 +82,6 @@ const EditProject = ({ user }) => {
 
   useEffect(() => {
     setHotspot({ ...hotspot, main_pages: menu });
-    console.log(hotspot);
   }, [menu]);
 
   const saveProject = () => {
@@ -91,12 +95,12 @@ const EditProject = ({ user }) => {
       );
     };
     update();
+    setSaved(true);
   };
 
   const updateMedia = (bucket, image, newImage, object) => {
     const split1 = image.split("files/");
     const imageId = split1[1].split("/view");
-    console.log(imageId);
     const deleteMedia = async () => {
       await api.deleteMedia(bucket, imageId[0]);
     };
@@ -135,12 +139,12 @@ const EditProject = ({ user }) => {
   const selectHotspot = (innerHotspot) => {
     setHotspot(innerHotspot);
     setMenu(innerHotspot.main_pages);
+    setActiveHotspot(innerHotspot);
   };
 
   const handleChange = (objectName, value) => {
     // set the new answer value
     const newAnswer = { ...hotspot, ...{ [objectName]: value } };
-    console.log(newAnswer);
   };
 
   const uid = new ShortUniqueId({ length: 6 });
@@ -170,7 +174,6 @@ const EditProject = ({ user }) => {
     };
     setHotspot(newHotspot);
     setHotspots([...hotspots, newHotspot]);
-    console.log(newHotspot.hotspot_id);
   };
 
   const newMenuItem = () => {
@@ -237,6 +240,13 @@ const EditProject = ({ user }) => {
 
   return (
     <>
+    { !saved ? (
+      <div className="font-medium w-[90vw] bg-orange-400 py-4 rounded-lg px-6 shadow-2xl flex justify-between z-[999999] m-auto my-6">
+        <p>Changes have been made. Please save your project.</p>
+        <button onClick={() => {saveProject()}} className="flex items-center gap-3"><SaveIcon className="w-6 h-6"/> Save</button>
+      </div>
+    ) : (<></>)
+  }
       <div className="w-[90vw] mx-auto mb-8">
         <div className="flex items-center justify-between">
           <div>
@@ -258,6 +268,7 @@ const EditProject = ({ user }) => {
                 <img
                   className="w-40 my-6 border rounded-lg shadow-lg"
                   src={project.homepage_image}
+                  alt=""
                 />
               ) : (
                 <></>
@@ -344,6 +355,7 @@ const EditProject = ({ user }) => {
               ))}
             </div>
           </div>
+          {activeHotspot ? (
           <div className="w-[70%] grid grid-cols-2 gap-3">
             <div>
               <p className="pb-2 text-sm text-gray-600">Hotspot Title</p>
@@ -393,6 +405,7 @@ const EditProject = ({ user }) => {
                     <img
                       className="my-3 border rounded-lg shadow-lg"
                       src={hotspot.panorama_image}
+                      alt=''
                     />
                   ) : (
                     <></>
@@ -420,6 +433,7 @@ const EditProject = ({ user }) => {
                     <img
                       className="my-3 border rounded-lg shadow-lg"
                       src={hotspot.virtual_object}
+                      alt=''
                     />
                   ) : (
                     <></>
@@ -477,32 +491,18 @@ const EditProject = ({ user }) => {
                   </button>
                 </div>
                 <div className="grid grid-cols-1 gap-2 pt-6">
-                  <div class="accordion" id="accordionExample">
+                  <div className="accordion" id="accordionExample">
                     {menu?.map((innerMenu) => (
                       <div
                         key={innerMenu.menu_id}
-                        class="accordion-item bg-white border border-gray-200"
+                        className="bg-white border border-gray-200 accordion-item"
                       >
                         <h2
-                          class="accordion-header mb-0"
+                          className="mb-0 accordion-header"
                           id={"heading_" + innerMenu.menu_id}
                         >
                           <button
-                            class="
-                      accordion-button
-                      relative
-                      flex
-                      items-center
-                      w-full
-                      py-4
-                      px-5
-                      text-base text-gray-800 text-left
-                      bg-white
-                      border-0
-                      rounded-none
-                      transition
-                      focus:outline-none
-                    "
+                            className="relative flex items-center w-full px-5 py-4 text-base text-left text-gray-800 transition bg-white border-0 rounded-none accordion-button focus:outline-none"
                             type="button"
                             data-bs-toggle="collapse"
                             data-bs-target={"#collapse_" + innerMenu.menu_id}
@@ -514,11 +514,11 @@ const EditProject = ({ user }) => {
                         </h2>
                         <div
                           id={"collapse_" + innerMenu.menu_id}
-                          class="accordion-collapse collapse"
+                          className="accordion-collapse collapse"
                           aria-labelledby={"heading_" + innerMenu.menu_id}
                           data-bs-parent="#accordionExample"
                         >
-                          <div class="accordion-body py-4 px-5">
+                          <div className="px-5 py-4 accordion-body">
                             <input
                               type="text"
                               className="w-full px-4 py-2 my-2 text-xl transition duration-200 ease-in-out transform border rounded-lg shadow-md focus:ring-2 focus:ring-gray-800 hover:shadow-xl"
@@ -552,6 +552,7 @@ const EditProject = ({ user }) => {
                               <img
                                 className="w-full my-4 border rounded-lg shadow-lg"
                                 src={innerMenu.background_image}
+                                alt=''
                               />
                             ) : (
                               <></>
@@ -667,6 +668,7 @@ const EditProject = ({ user }) => {
               />
             </div>
           </div>
+          ) : <></> }
         </div>
       </div>
     </>
