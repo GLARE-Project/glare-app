@@ -1,0 +1,24 @@
+version: '3.7'
+services:
+  frontend:
+    image: glare-app
+    container_name: glare-app
+    volumes:
+      - /home/glare/glare-app/config.env:/app/.env
+    build:
+      context: ./
+      dockerfile: Dockerfile
+      args:
+        REPOSITORY_URL: https://github.com/GLARE-Project/glare-app
+        BRANCH_NAME: 83db80ad0ae78015063ffa8a62b334c8eb8beadc
+        EXPOSED_PORT: 3000
+    ports:
+      - "3000:3000"
+    environment:
+      env_file: config.env
+    networks:
+      - appwrite
+    stdin_open: true
+
+networks:
+    appwrite:

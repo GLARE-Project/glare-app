@@ -9,8 +9,11 @@ let api = {
       return api.sdk;
     }
     let appwrite = new Appwrite();
+   // console.log("work",Server.endpoint,Server.project);
+   // console.log("work1",appwrite.setEndpoint(Server.endpoint).setProject(Server.project))
     appwrite.setEndpoint(Server.endpoint).setProject(Server.project);
     api.sdk = appwrite;
+    //console.log("work2")
     return appwrite;
   },
 
@@ -22,7 +25,12 @@ let api = {
     return api.provider().account.get();
   },
 
+  // updatePassword: (password) => {
+  //   return api.provider().account.updatePassword(password);
+  // },
+
   createSession: (email, password) => {
+    console.log(email, password);
     return api.provider().account.createSession(email, password);
   },
 

@@ -9,8 +9,11 @@ import {
   tooCloseHotspotList,
 } from "./utils/gpsManager";
 import MarkerClusterGroup from "react-leaflet-markercluster";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import L from "leaflet";
+// import Tour from "../Viewer/Tour/Tour";
+// import { Server } from "../../utils/config";
+// import api from "../../api/api";
 
 const Map = ({
   onCampus,
@@ -21,16 +24,41 @@ const Map = ({
 }) => {
   const [currentPos, setCurrentPos] = useState([]);
   const [GeoError, setError] = useState(null);
+  const [latitude, setLatitude] = useState(()=> hotspots.map((l) => l.latitude));
+  const [longitude, setLongitude] = useState(()=> hotspots.map((l) => l.longitude));
+  
+  
+  //console.log("projectid--------", projectId);
+
+  // const { tourid } = useParams();
+  // const [project, setProject] = useState({});
+  // const [marker, setMarker] = useState();
 
   const navigate = useNavigate();
-  console.log(hotspots);
+ 
+   console.log("latitude-a", latitude);
+   console.log("longitude-a",longitude);
+  
+  //  useEffect(() => {
+  //   const getProject = async () => {
+  //     let response = await api.getDocument(Server.collectionID, projectId);
+  //     setProject(response);
+  //     console.log("response.hotspots---------",response.hotspots);
+  //     const exisitingHotspots = response.hotspots?.map((h) => JSON.parse(h));
+  //   //  console.log("exisitingHotspots---------",exisitingHotspots);
+  //     await setProject({ ...response, hotspots: exisitingHotspots });
+  //     await setMarker(exisitingHotspots);
+  //   };
+  //   getProject();
+  // }, []);
+  
+  // const initalRegion = {
+  //   lat: latitude,
+  //   lng: longitude,
+  //   zoom: 15,
+  // };
 
-  const initalRegion = {
-    lat: 41.150121,
-    lng: -81.345059,
-    zoom: 18,
-  };
-  const position = [initalRegion.lat, initalRegion.lng];
+  const position = [latitude[0], longitude[0]];
 
   const checkCamera = useCallback(() => {
     // check to see if the devices are undefine
@@ -96,7 +124,7 @@ const Map = ({
     <div>
       <MapContainer
         center={position}
-        zoom={initalRegion.zoom}
+        zoom={15}
         currentPos={currentPos}
         scrollWheelZoom={false}
         className="z-0"

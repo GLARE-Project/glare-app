@@ -3,13 +3,37 @@ import api from "../../api/api";
 import { FetchState, useGetProjects } from "../../hooks";
 import { Server } from "../../utils/config";
 import Alert from "../Alert/Alert";
-import { Link } from "react-router-dom";
+import {useParams, Link } from "react-router-dom";
 import Nav from "../../nav";
 const { Query } = require("appwrite");
 
+
+
 const Projects = ({ user }) => {
-  console.log(user);
+  
+ // console.log(user);
   const [projects, setProjects] = useState([]);
+
+  // console.log("projectssss-----",projects);
+   
+  // const [projectId, setProjectId] = useState([]);
+  
+  //  useEffect(() => {
+  //   {projects?.map((project) => (
+  //   // console.log("project------",project);
+  //   setProjectId(project.$id)
+    
+  // ))}
+  //   })
+
+  //  console.log("projectId-----",projectId);
+
+  //  function createTourLink(){
+  //    var url= 'http://glare.cs.kent.edu:3000/viewer/'+projectId;
+  //    console.log("url--------",url);
+
+  //  }
+  //  createTourLink();
 
   useEffect(() => {
     const getStuff = async () => {
@@ -43,7 +67,17 @@ const Projects = ({ user }) => {
                 >
                   View
                 </Link>
+                
               </div>
+              <p className="mt-6">
+                {" "}
+                {" "}
+                <button onClick={() => {
+                  navigator.clipboard.writeText('http://glare.cs.kent.edu:3000/viewer/' + project.$id);
+                }}>
+                  Click here to copy the tour link!
+                </button>
+              </p>
             </div>
           </div>
         ))}

@@ -20,6 +20,17 @@ const Login = ({ dispatch }) => {
     }
   };
 
+  // const forgotPassword = async () => {
+  //   dispatch({ type: FetchState.FETCH_INIT });
+  //   try {
+  //     await api.updatePassword(password);
+  //     dispatch({ type: FetchState.FETCH_SUCCESS, payload: "Success" });
+  //   } catch (error) {
+  //     dispatch({ type: FetchState.FETCH_FAILURE });
+  //   }
+  // };
+
+
   return register ? (
     <SignUp setRegister={setRegister} dispatch={dispatch} />
   ) : (
@@ -59,6 +70,16 @@ const Login = ({ dispatch }) => {
               Login
             </button>
           </div>
+          <p className="mt-6">
+          {" "}
+          {" "}
+          <span
+            className="cursor-pointer underline"
+            onClick={() => console.log("clicked forgot password!!!")}
+          >
+            Forgot password?
+          </span>{" "}
+        </p>        
         </form>
       </div>
     </section>

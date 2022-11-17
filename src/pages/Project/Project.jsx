@@ -90,6 +90,7 @@ const Project = ({ user, dispatch, project, setProject }) => {
     } catch (e) {
       console.log("Error in adding project");
     }
+
   };
 
   const createProject = (project) => {

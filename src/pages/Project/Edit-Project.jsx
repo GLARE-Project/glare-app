@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import api from "../../api/api";
 import { Server } from "../../utils/config";
 import { MinusCircleIcon, PlusCircleIcon } from "@heroicons/react/solid";
@@ -33,7 +33,6 @@ const EditProject = ({ user }) => {
   const [menu, setMenu] = useState([]);
   const { id } = useParams();
   const [saved, setSaved] = useState(true);
-
   const LongLatStep = 0.0001;
 
   useEffect(() => {
@@ -188,6 +187,18 @@ const EditProject = ({ user }) => {
     setMenu([...menu, menuItem]);
   };
 
+  // const newLibraryItem = () => {
+  //   const menuItem = {
+  //     title: "New Library Item",
+  //     background_image: "",
+  //     descriptive_audio: "",
+  //     menu_id: uid(),
+  //   };
+
+  //   setMenu([...menu, menuItem]);
+  // };
+
+
   const updateMenu = (key, value, object) => {
     setMenu((current) =>
       current.map((obj) => {
@@ -237,6 +248,22 @@ const EditProject = ({ user }) => {
     };
     setHotspot(newAnswer);
   };
+
+ // const collectionID= Server.collectionID;
+  // const documentId = project.id;
+ // console.log("collectionID-------", Server.collectionID,);
+ // console.log("id-------",id);
+
+  const history = useNavigate();
+   
+  const deleteDocument = async () => {
+    await api.deleteDocument(Server.collectionID, id);
+    history("/projects");
+  };
+
+  // 41.14660588613492
+  // -81.34747253365593
+ //console.log("projectssss-------", project);
 
   return (
     <>
@@ -326,6 +353,14 @@ const EditProject = ({ user }) => {
             </div>
           </div>
         </div>
+
+        <div className="border rounded-full shadow-lg w-40 text-center">
+        <button className="hover:text-red-500 font-bold text-center" onClick={() => deleteDocument()}>
+            Delete Project
+        </button>
+        </div>
+
+          
         <div className="flex gap-4 pt-4">
           <div className="w-[30%] border-2 rounded-lg p-3">
             <div className="flex items-center justify-between">
@@ -620,6 +655,149 @@ const EditProject = ({ user }) => {
                   </div>
                 </div>
               </div>
+             
+
+             {/* library item------ */}
+
+              {/* <div className="p-3 mt-4 border-2 rounded-lg">
+                <div className="flex items-center justify-between">
+                    <p className="text-xl font-bold uppercase">Library Content</p>
+                    <button onClick={() => newMenuItem()}>
+                      <PlusCircleIcon className="w-6 hover:text-blue-400" />
+                    </button>
+                </div>
+                <div className="grid grid-cols-1 gap-2 pt-6">
+                  <div className="accordion" id="accordionExample">
+                    {menu?.map((innerMenu) => (
+                      <div
+                        key={innerMenu.menu_id}
+                        className="bg-white border border-gray-200 accordion-item"
+                      >
+                        <h2
+                          className="mb-0 accordion-header"
+                          id={"heading_" + innerMenu.menu_id}
+                        >
+                          <button
+                            className="relative flex items-center w-full px-5 py-4 text-base text-left text-gray-800 transition bg-white border-0 rounded-none accordion-button focus:outline-none"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target={"#collapse_" + innerMenu.menu_id}
+                            aria-expanded="false"
+                            aria-controls="collapseOne"
+                          >
+                            {innerMenu.title}
+                          </button>
+                        </h2>
+                        <div
+                          id={"collapse_" + innerMenu.menu_id}
+                          className="accordion-collapse collapse"
+                          aria-labelledby={"heading_" + innerMenu.menu_id}
+                          data-bs-parent="#accordionExample"
+                        >
+                          <div className="px-5 py-4 accordion-body">
+                            <input
+                              type="text"
+                              className="w-full px-4 py-2 my-2 text-xl transition duration-200 ease-in-out transform border rounded-lg shadow-md focus:ring-2 focus:ring-gray-800 hover:shadow-xl"
+                              placeholder="Menu Title"
+                              value={innerMenu.title}
+                              onChange={(e) =>
+                                updateMenu(
+                                  innerMenu.menu_id,
+                                  e.target.value,
+                                  "title"
+                                )
+                              }
+                            ></input>
+                            <textarea
+                              type="text"
+                              className="w-full px-4 py-2 my-2 transition duration-200 ease-in-out transform border rounded-lg shadow-md text-md focus:ring-2 focus:ring-gray-800 hover:shadow-xl"
+                              placeholder="Description"
+                              value={innerMenu.description}
+                              onChange={(e) =>
+                                updateMenu(
+                                  innerMenu.menu_id,
+                                  e.target.value,
+                                  "description"
+                                )
+                              }
+                            ></textarea>
+                            <p className="pl-2 text-sm text-gray-600">
+                              Background Image
+                            </p>
+                            {innerMenu.background_image ? (
+                              <img
+                                className="w-full my-4 border rounded-lg shadow-lg"
+                                src={innerMenu.background_image}
+                                alt=''
+                              />
+                            ) : (
+                              <></>
+                            )}
+                            <input
+                              type="file"
+                              id="background_image"
+                              accept="image/*"
+                              name="background_image"
+                              className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-sky-50 file:text-sky-700 hover:file:bg-sky-100"
+                              onChange={(e) =>
+                                updateMenuMedia(
+                                  Server.imageBucketID,
+                                  e.target.files[0],
+                                  "background_image",
+                                  innerMenu.menu_id
+                                )
+                              }
+                            />
+                            <p className="py-3 pl-2 text-sm text-gray-600">
+                              Narration Audio
+                            </p>
+                            {innerMenu.descriptive_audio ? (
+                              <audio
+                                className="rounded-full shadow-lg border mb-4 w-[100%]"
+                                controls
+                              >
+                                <source src={innerMenu.descriptive_audio} />
+                              </audio>
+                            ) : (
+                              <></>
+                            )}
+                            <input
+                              type="file"
+                              id="start_audio"
+                              accept="audio/*"
+                              name="start_audio"
+                              className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-sky-50 file:text-sky-700 hover:file:bg-sky-100"
+                              onChange={(e) =>
+                                updateMenuMedia(
+                                  Server.audioBucketID,
+                                  e.target.files[0],
+                                  "descriptive_audio",
+                                  innerMenu.menu_id
+                                )
+                              }
+                            />
+                            <button
+                              className="flex items-center gap-1 px-4 py-2 mx-auto mt-4 font-semibold text-gray-900 bg-white border border-gray-900 rounded-lg shadow-md text-md hover:border-transparent hover:text-white hover:bg-gray-900 focus:outline-none"
+                              onClick={() =>
+                                setMenu((menu) =>
+                                  menu.filter(
+                                    (i) => i.menu_id !== innerMenu.menu_id
+                                  )
+                                )
+                              }
+                            >
+                              <MinusCircleIcon className="w-5 hover:text-red-500" />{" "}
+                              Delete
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div> */}
+
+
             </div>
 
             <div>
@@ -670,6 +848,8 @@ const EditProject = ({ user }) => {
           </div>
           ) : <></> }
         </div>
+
+       
       </div>
     </>
   );
