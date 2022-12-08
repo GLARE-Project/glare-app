@@ -35,6 +35,8 @@ const EditProject = ({ user }) => {
   const [saved, setSaved] = useState(true);
   const LongLatStep = 0.0001;
 
+  const [library, setLibrary] = useState([]);
+
   useEffect(() => {
     const getProject = async () => {
       let response = await api.getDocument(Server.collectionID, id);
@@ -80,8 +82,8 @@ const EditProject = ({ user }) => {
   }, [hotspot]);
 
   useEffect(() => {
-    setHotspot({ ...hotspot, main_pages: menu });
-  }, [menu]);
+    setHotspot({ ...hotspot, main_pages: menu, media_pages: library });
+  }, [menu, library]);
 
   const saveProject = () => {
     const update = async () => {
@@ -138,6 +140,7 @@ const EditProject = ({ user }) => {
   const selectHotspot = (innerHotspot) => {
     setHotspot(innerHotspot);
     setMenu(innerHotspot.main_pages);
+    setLibrary(innerHotspot.media_pages);
     setActiveHotspot(innerHotspot);
   };
 
@@ -187,18 +190,6 @@ const EditProject = ({ user }) => {
     setMenu([...menu, menuItem]);
   };
 
-  // const newLibraryItem = () => {
-  //   const menuItem = {
-  //     title: "New Library Item",
-  //     background_image: "",
-  //     descriptive_audio: "",
-  //     menu_id: uid(),
-  //   };
-
-  //   setMenu([...menu, menuItem]);
-  // };
-
-
   const updateMenu = (key, value, object) => {
     setMenu((current) =>
       current.map((obj) => {
@@ -223,6 +214,50 @@ const EditProject = ({ user }) => {
       setMenu((current) =>
         current.map((obj) => {
           if (obj.menu_id === key) {
+            return { ...obj, [object]: imageURL };
+          }
+          return obj;
+        })
+      );
+    };
+    upload();
+  };
+
+  const newLibraryItem = () => {
+    const libraryItem = {
+      title: "New Library Item",
+      background_image: "",
+      descriptive_audio: "",
+      library_id: uid(),
+    };
+
+    setLibrary([...library, libraryItem]);
+  };
+
+  const updateLibrary = (key, value, object) => {
+    setLibrary((current) =>
+      current.map((obj) => {
+        if (obj.library_id === key) {
+          return { ...obj, [object]: value };
+        }
+        return obj;
+      })
+    );
+  };
+
+  const updateLibraryMedia = (bucket, media, object, key) => {
+    const upload = async () => {
+      let response = await api.createMedia(
+        bucket,
+        media,
+        [`user:${user["$id"]}`],
+        [`user:${user["$id"]}`]
+      );
+
+      let imageURL = await api.getMedia(bucket, response.$id);
+      setLibrary((current) =>
+        current.map((obj) => {
+          if (obj.library_id === key) {
             return { ...obj, [object]: imageURL };
           }
           return obj;
@@ -659,39 +694,39 @@ const EditProject = ({ user }) => {
 
              {/* library item------ */}
 
-              {/* <div className="p-3 mt-4 border-2 rounded-lg">
+              <div className="p-3 mt-4 border-2 rounded-lg">
                 <div className="flex items-center justify-between">
                     <p className="text-xl font-bold uppercase">Library Content</p>
-                    <button onClick={() => newMenuItem()}>
+                    <button onClick={() => newLibraryItem()}>
                       <PlusCircleIcon className="w-6 hover:text-blue-400" />
                     </button>
                 </div>
                 <div className="grid grid-cols-1 gap-2 pt-6">
                   <div className="accordion" id="accordionExample">
-                    {menu?.map((innerMenu) => (
+                    {library?.map((innerLib) => (
                       <div
-                        key={innerMenu.menu_id}
+                        key={innerLib.library_id}
                         className="bg-white border border-gray-200 accordion-item"
                       >
                         <h2
                           className="mb-0 accordion-header"
-                          id={"heading_" + innerMenu.menu_id}
+                          id={"heading_" + innerLib.library_id}
                         >
                           <button
                             className="relative flex items-center w-full px-5 py-4 text-base text-left text-gray-800 transition bg-white border-0 rounded-none accordion-button focus:outline-none"
                             type="button"
                             data-bs-toggle="collapse"
-                            data-bs-target={"#collapse_" + innerMenu.menu_id}
+                            data-bs-target={"#collapse_" + innerLib.library_id}
                             aria-expanded="false"
                             aria-controls="collapseOne"
                           >
-                            {innerMenu.title}
+                            {innerLib.title}
                           </button>
                         </h2>
                         <div
-                          id={"collapse_" + innerMenu.menu_id}
+                          id={"collapse_" + innerLib.library_id}
                           className="accordion-collapse collapse"
-                          aria-labelledby={"heading_" + innerMenu.menu_id}
+                          aria-labelledby={"heading_" + innerLib.library_id}
                           data-bs-parent="#accordionExample"
                         >
                           <div className="px-5 py-4 accordion-body">
@@ -699,35 +734,23 @@ const EditProject = ({ user }) => {
                               type="text"
                               className="w-full px-4 py-2 my-2 text-xl transition duration-200 ease-in-out transform border rounded-lg shadow-md focus:ring-2 focus:ring-gray-800 hover:shadow-xl"
                               placeholder="Menu Title"
-                              value={innerMenu.title}
+                              value={innerLib.title}
                               onChange={(e) =>
-                                updateMenu(
-                                  innerMenu.menu_id,
+                                updateLibrary(
+                                  innerLib.library_id,
                                   e.target.value,
                                   "title"
                                 )
                               }
                             ></input>
-                            <textarea
-                              type="text"
-                              className="w-full px-4 py-2 my-2 transition duration-200 ease-in-out transform border rounded-lg shadow-md text-md focus:ring-2 focus:ring-gray-800 hover:shadow-xl"
-                              placeholder="Description"
-                              value={innerMenu.description}
-                              onChange={(e) =>
-                                updateMenu(
-                                  innerMenu.menu_id,
-                                  e.target.value,
-                                  "description"
-                                )
-                              }
-                            ></textarea>
+                            
                             <p className="pl-2 text-sm text-gray-600">
                               Background Image
                             </p>
-                            {innerMenu.background_image ? (
+                            {innerLib.background_image ? (
                               <img
                                 className="w-full my-4 border rounded-lg shadow-lg"
-                                src={innerMenu.background_image}
+                                src={innerLib.background_image}
                                 alt=''
                               />
                             ) : (
@@ -740,23 +763,23 @@ const EditProject = ({ user }) => {
                               name="background_image"
                               className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-sky-50 file:text-sky-700 hover:file:bg-sky-100"
                               onChange={(e) =>
-                                updateMenuMedia(
+                                updateLibraryMedia(
                                   Server.imageBucketID,
                                   e.target.files[0],
                                   "background_image",
-                                  innerMenu.menu_id
+                                  innerLib.library_id
                                 )
                               }
                             />
                             <p className="py-3 pl-2 text-sm text-gray-600">
                               Narration Audio
                             </p>
-                            {innerMenu.descriptive_audio ? (
+                            {innerLib.descriptive_audio ? (
                               <audio
                                 className="rounded-full shadow-lg border mb-4 w-[100%]"
                                 controls
                               >
-                                <source src={innerMenu.descriptive_audio} />
+                                <source src={innerLib.descriptive_audio} />
                               </audio>
                             ) : (
                               <></>
@@ -768,20 +791,20 @@ const EditProject = ({ user }) => {
                               name="start_audio"
                               className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-sky-50 file:text-sky-700 hover:file:bg-sky-100"
                               onChange={(e) =>
-                                updateMenuMedia(
+                                updateLibraryMedia(
                                   Server.audioBucketID,
                                   e.target.files[0],
                                   "descriptive_audio",
-                                  innerMenu.menu_id
+                                  innerLib.library_id
                                 )
                               }
                             />
                             <button
                               className="flex items-center gap-1 px-4 py-2 mx-auto mt-4 font-semibold text-gray-900 bg-white border border-gray-900 rounded-lg shadow-md text-md hover:border-transparent hover:text-white hover:bg-gray-900 focus:outline-none"
                               onClick={() =>
-                                setMenu((menu) =>
-                                  menu.filter(
-                                    (i) => i.menu_id !== innerMenu.menu_id
+                                setLibrary((lib) =>
+                                lib.filter(
+                                    (i) => i.library_id !== innerLib.library_id
                                   )
                                 )
                               }
@@ -795,7 +818,7 @@ const EditProject = ({ user }) => {
                     ))}
                   </div>
                 </div>
-              </div> */}
+              </div>
 
 
             </div>

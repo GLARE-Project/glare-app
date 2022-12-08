@@ -13,7 +13,6 @@ let api = {
    // console.log("work1",appwrite.setEndpoint(Server.endpoint).setProject(Server.project))
     appwrite.setEndpoint(Server.endpoint).setProject(Server.project);
     api.sdk = appwrite;
-    //console.log("work2")
     return appwrite;
   },
 
@@ -29,6 +28,15 @@ let api = {
   //   return api.provider().account.updatePassword(password);
   // },
 
+  createRecovery: (email, url) => {
+    //let url1 = Server.endpoint;
+    return api.provider().account.createRecovery(email, url + '/resetPassword');
+  },
+  
+  updateRecovery: (userId, secret, password, paswordAgain) => {
+    return api.provider().account.updateRecovery(userId, secret, password, paswordAgain);
+  },
+  
   createSession: (email, password) => {
     console.log(email, password);
     return api.provider().account.createSession(email, password);

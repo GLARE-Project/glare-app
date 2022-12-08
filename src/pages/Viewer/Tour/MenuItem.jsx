@@ -47,8 +47,11 @@ const MenuOverlay = ({
           <XCircleIcon className="w-10" />
         </div>
         <div className="z-30 my-auto w-full h-full bg-gray-900 rounded-md bg-clip-padding backdrop-filter backdrop-blur-md bg-opacity-40 border border-gray-100 p-10">
-          <h2 className="text-[6vw]  md:text-[4vw] uppercase text-center font-bold">
+          <h2 className="text-[6vw]  md:text-[4vw] uppercase text-left font-bold">
             Menu
+          </h2>
+          <h2 className="text-[6vw]  md:text-[4vw] uppercase text-right font-bold">
+            Library
           </h2>
           <div className="grid grid-cols-2 gap-6 h-3/4 pt-6">
             <div className="border rounded-lg p-10 flex flex-col gap-4">
@@ -62,10 +65,19 @@ const MenuOverlay = ({
               ))}
             </div>
             <div className="flex flex-col gap-6">
-              <div className="border rounded-lg p-10 h-4/5">
-                <h2 className="font-bold text-xl uppercase">Library</h2>
-              </div>
-              <div className="border rounded-lg h-1/5"></div>
+              {/* <div className="border rounded-lg p-10 h-4/5"> */}
+                <div className="border rounded-lg p-10 flex flex-col gap-4">
+                {library?.map((item) => (
+                <div
+                  className="border p-4 rounded-lg cursor-pointer"
+                  onClick={() => page(item)}
+                >
+                  <p className="text-lg font-bold">{item.title}</p>
+                </div>
+              ))}
+            </div>
+              {/* </div> */}
+              {/* <div className="border rounded-lg h-1/5"></div> */}
             </div>
           </div>
         </div>

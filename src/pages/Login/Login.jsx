@@ -2,6 +2,9 @@ import { useState } from "react";
 import api from "../../api/api";
 import SignUp from "./SignUp";
 import { FetchState } from "../../hooks";
+//import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+
 
 const Login = ({ dispatch }) => {
   const [email, setEmail] = useState();
@@ -14,21 +17,30 @@ const Login = ({ dispatch }) => {
     try {
       await api.createSession(email, password);
       const data = await api.getAccount();
+    //  console.log("data-------------",data.password);
       dispatch({ type: FetchState.FETCH_SUCCESS, payload: data });
     } catch (e) {
       dispatch({ type: FetchState.FETCH_FAILURE });
     }
   };
+  
 
-  // const forgotPassword = async () => {
-  //   dispatch({ type: FetchState.FETCH_INIT });
-  //   try {
-  //     await api.updatePassword(password);
-  //     dispatch({ type: FetchState.FETCH_SUCCESS, payload: "Success" });
-  //   } catch (error) {
-  //     dispatch({ type: FetchState.FETCH_FAILURE });
-  //   }
-  // };
+//console.log("password---------------------",password);
+
+let navigate = useNavigate();
+
+  const forgotPassword = async () => {
+    // dispatch({ type: FetchState.FETCH_INIT });
+    // try {
+    // await api.createSession(email, password);
+    //   const data = await api.getAccount();
+    //   await api.updatePassword(password);
+    //   dispatch({ type: FetchState.FETCH_SUCCESS, payload: password });
+      navigate('/forgot-password');
+    // } catch (error) {
+    //   dispatch({ type: FetchState.FETCH_FAILURE });
+    // }
+  };
 
 
   return register ? (
@@ -70,12 +82,18 @@ const Login = ({ dispatch }) => {
               Login
             </button>
           </div>
+      
+          {/* <nav>
+        <Link to="src/pages/Login/ForgetPassword.jsx">Forget Password?</Link> {" "}
+      </nav> */}
+
           <p className="mt-6">
           {" "}
           {" "}
           <span
             className="cursor-pointer underline"
-            onClick={() => console.log("clicked forgot password!!!")}
+            onClick={() =>  forgotPassword()
+          }
           >
             Forgot password?
           </span>{" "}
