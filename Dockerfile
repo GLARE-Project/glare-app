@@ -14,6 +14,7 @@ ARG BASE_WORKDIR
 ENV EXPOSED_PORT ${EXPOSED_PORT}
 
 RUN apk add --no-cache git bash
+RUN apk add --no-cache python3 py3-pip build-base make
 RUN mkdir -p $BASE_WORKDIR
 WORKDIR "${BASE_WORKDIR}"
 
