@@ -10,7 +10,7 @@ services:
       dockerfile: Dockerfile
       args:
         REPOSITORY_URL: https://github.com/9536240277/glare-app
-        BRANCH_NAME: 9724d4b086dd78b388ba4e3e6aa1c0ce6941472c
+        BRANCH_NAME: 89296f5197f53bbe2000b456eedcac9784d8d908
         EXPOSED_PORT: 3000
     ports:
       - "3000:3000"
