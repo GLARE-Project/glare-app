@@ -1,10 +1,12 @@
-import { Client, Databases } from "appwrite";
+import { Client, Databases, Account, Storage, Permission, Role } from "appwrite";
 
 import { Server } from "../utils/config";
 
 let api = {
   sdk: null,
   database: null,
+  account: null,
+  storage: null,
 
   provider: () => {
     if (api.sdk) {
@@ -16,6 +18,8 @@ let api = {
     client.setEndpoint(Server.endpoint).setProject(Server.project);
     api.sdk = client;
     api.database = new Databases(client);
+    api.account = new Account(client);
+    api.storage = new Storage(client);
     return client;
   },
  
@@ -49,10 +53,10 @@ let api = {
     return api.provider().account.deleteSession("current");
   },
 
-  createDocument: (collectionId, data, read, write) => {
+  createDocument: (collectionId, data, read=Permission.read(Role.any()), write=Permission.update(Role.any()), del=Permission.delete(Role.any()) ) => {
     return api
       .provider()
-      .database.createDocument(Server.databaseID, collectionId, "unique()", data, read, write);
+      .database.createDocument(Server.databaseID, collectionId, "unique()", data, [read, write, del]);
   },
 
   listDocuments: (collectionId) => {
@@ -67,20 +71,20 @@ let api = {
     return api.provider().database.getDocument(Server.databaseID, collectionId, docId);
   },
 
-  updateDocument: (collectionId, documentId, data, read, write) => {
+  updateDocument: (collectionId, documentId, data, read=Permission.read(Role.any()), write=Permission.update(Role.any()), del=Permission.delete(Role.any()) ) => {
     return api
       .provider()
-      .database.updateDocument(Server.databaseID, collectionId, documentId, data, read, write);
+      .database.updateDocument(Server.databaseID, collectionId, documentId, data, [read, write, del]);
   },
 
   deleteDocument: (collectionId, documentId) => {
     return api.provider().database.deleteDocument(Server.databaseID, collectionId, documentId);
   },
 
-  createMedia: (bucketID, data, read, write) => {
+  createMedia: (bucketID, data, read=Permission.read(Role.any()), write=Permission.update(Role.any()), del=Permission.delete(Role.any()) ) => {
     return api
       .provider()
-      .storage.createFile(bucketID, "unique()", data, read, write);
+      .storage.createFile(bucketID, "unique()", data, [read, write, del]);
   },
 
   getMedia: async (bucketID, fileID) => {

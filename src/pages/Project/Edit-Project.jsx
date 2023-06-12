@@ -5,6 +5,7 @@ import { Server } from "../../utils/config";
 import { MinusCircleIcon, PlusCircleIcon } from "@heroicons/react/solid";
 import { SaveIcon } from "@heroicons/react/outline";
 import ShortUniqueId from "short-unique-id";
+import { Permission, Role } from "appwrite";
 import Menu from "./Menu";
 import MapField from "./Map";
 import Nav from "../../nav";
@@ -91,8 +92,9 @@ const EditProject = ({ user }) => {
         Server.collectionID,
         id,
         project,
-        [`role:all`],
-        [`user:${user["$id"]}`]
+        Permission.read(Role.any()),
+        Permission.update(Role.user(user["$id"])),
+        Permission.delete(Role.user(user["$id"]))
       );
     };
     update();
@@ -110,8 +112,9 @@ const EditProject = ({ user }) => {
       let newResponse = await api.createMedia(
         bucket,
         newImage,
-        [`role:all`],
-        [`user:${user["$id"]}`]
+        Permission.read(Role.any()),
+        Permission.update(Role.user(user["$id"])),
+        Permission.delete(Role.user(user["$id"]))
       );
 
       let imageURL = await api.getMedia(bucket, newResponse.$id);
@@ -127,8 +130,9 @@ const EditProject = ({ user }) => {
       let response = await api.createMedia(
         bucket,
         media,
-        [`role:all`],
-        [`user:${user["$id"]}`]
+        Permission.read(Role.any()),
+        Permission.update(Role.user(user["$id"])),
+        Permission.delete(Role.user(user["$id"]))
       );
 
       let imageURL = await api.getMedia(bucket, response.$id);
@@ -206,8 +210,9 @@ const EditProject = ({ user }) => {
       let response = await api.createMedia(
         bucket,
         media,
-        [`user:${user["$id"]}`],
-        [`user:${user["$id"]}`]
+        Permission.read(Role.user(user["$id"])),
+        Permission.update(Role.user(user["$id"])),
+        Permission.delete(Role.user(user["$id"]))
       );
 
       let imageURL = await api.getMedia(bucket, response.$id);
@@ -250,8 +255,9 @@ const EditProject = ({ user }) => {
       let response = await api.createMedia(
         bucket,
         media,
-        [`user:${user["$id"]}`],
-        [`user:${user["$id"]}`]
+        Permission.read(Role.user(user["$id"])),
+        Permission.update(Role.user(user["$id"])),
+        Permission.delete(Role.user(user["$id"]))
       );
 
       let imageURL = await api.getMedia(bucket, response.$id);

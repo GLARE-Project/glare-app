@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Permission, Role } from "appwrite";
 import api from "../../api/api";
 import { FetchState, useGetProjects } from "../../hooks";
 import Nav from "../../nav";
@@ -23,8 +24,9 @@ const Project = ({ user, dispatch, project, setProject }) => {
     let response = await api.createMedia(
       Server.imageBucketID,
       image,
-      [`role:all`],
-      [`user:${user["$id"]}`]
+      Permission.read(Role.any()),
+      Permission.update(Role.user(user["$id"])),
+      Permission.delete(Role.user(user["$id"]))
     );
 
     let imageURL = await api.getMedia(Server.imageBucketID, response.$id);
@@ -55,8 +57,9 @@ const Project = ({ user, dispatch, project, setProject }) => {
     let response2 = await api.createMedia(
       Server.audioBucketID,
       audio,
-      [`role:all`],
-      [`user:${user["$id"]}`]
+      Permission.read(Role.any()),
+      Permission.update(Role.user(user["$id"])),
+      Permission.delete(Role.user(user["$id"]))
     );
 
     let audioURL = await api.getMedia(Server.audioBucketID, response2.$id);
@@ -72,8 +75,9 @@ const Project = ({ user, dispatch, project, setProject }) => {
       let docRespo = await api.createDocument(
         Server.collectionID,
         data,
-        [`role:all`],
-        [`user:${user["$id"]}`]
+        Permission.read(Role.any()),
+        Permission.update(Role.user(user["$id"])),
+        Permission.delete(Role.user(user["$id"]))
       );
 
       setCurrentProject({ ...currentProject, project_id: docRespo.$id });
@@ -82,8 +86,9 @@ const Project = ({ user, dispatch, project, setProject }) => {
       api.updateDocument(
         Server.collectionID,
         currentProject,
-        [`role:all`],
-        [`user:${user["$id"]}`]
+        Permission.read(Role.any()),
+        Permission.update(Role.user(user["$id"])),
+        Permission.delete(Role.user(user["$id"]))
       );
       setStale({ stale: true });
       navigate(`/edit/${docRespo.$id}`);
