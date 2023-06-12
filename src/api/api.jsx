@@ -1,21 +1,24 @@
-import { Appwrite } from "appwrite";
+import { Client, Databases } from "appwrite";
+
 import { Server } from "../utils/config";
 
 let api = {
   sdk: null,
+  database: null,
 
   provider: () => {
     if (api.sdk) {
       return api.sdk;
     }
-    let appwrite = new Appwrite();
-   // console.log("work",Server.endpoint,Server.project);
-   // console.log("work1",appwrite.setEndpoint(Server.endpoint).setProject(Server.project))
-    appwrite.setEndpoint(Server.endpoint).setProject(Server.project);
-    api.sdk = appwrite;
-    return appwrite;
+    const client = new Client();
+    // console.log("work",Server.endpoint,Server.project);
+    // console.log("work1",appwrite.setEndpoint(Server.endpoint).setProject(Server.project))
+    client.setEndpoint(Server.endpoint).setProject(Server.project);
+    api.sdk = client;
+    api.database = new Databases(client);
+    return client;
   },
-
+ 
   createAccount: (email, password, name) => {
     return api.provider().account.create("unique()", email, password, name);
   },
@@ -49,29 +52,29 @@ let api = {
   createDocument: (collectionId, data, read, write) => {
     return api
       .provider()
-      .database.createDocument(collectionId, "unique()", data, read, write);
+      .database.createDocument(Server.databaseID, collectionId, "unique()", data, read, write);
   },
 
   listDocuments: (collectionId) => {
-    return api.provider().database.listDocuments(collectionId);
+    return api.provider().database.listDocuments(Server.databaseID, collectionId);
   },
 
   listDocumentsQuery: (collectionId, query) => {
-    return api.provider().database.listDocuments(collectionId, query);
+    return api.provider().database.listDocuments(Server.databaseID, collectionId, query);
   },
 
   getDocument: (collectionId, docId) => {
-    return api.provider().database.getDocument(collectionId, docId);
+    return api.provider().database.getDocument(Server.databaseID, collectionId, docId);
   },
 
   updateDocument: (collectionId, documentId, data, read, write) => {
     return api
       .provider()
-      .database.updateDocument(collectionId, documentId, data, read, write);
+      .database.updateDocument(Server.databaseID, collectionId, documentId, data, read, write);
   },
 
   deleteDocument: (collectionId, documentId) => {
-    return api.provider().database.deleteDocument(collectionId, documentId);
+    return api.provider().database.deleteDocument(Server.databaseID, collectionId, documentId);
   },
 
   createMedia: (bucketID, data, read, write) => {
