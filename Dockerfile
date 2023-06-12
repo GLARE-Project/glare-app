@@ -20,7 +20,6 @@ WORKDIR "${BASE_WORKDIR}"
 
 RUN git clone $REPOSITORY_URL . &> /dev/null
 RUN git checkout $BRANCH_NAME
-RUN rm .env.example
 RUN printf 'REACT_APP_ENDPOINT=https://glare.cs.kent.edu/v1 \n\
 REACT_APP_PROJECT=628ef3fa0f05ab4b00e5 \n\
 REACT_APP_DATABASE_ID=64869d98deec0f4a7577 \n\
