@@ -26,7 +26,7 @@ REACT_APP_DATABASE_ID=64869d98deec0f4a7577 \n\
 REACT_APP_COLLECTION_ID=628ef4a99bd8906b3c9b \n\
 REACT_APP_IMAGE_ID=628ef5485c47b64623e3 \n\
 REACT_APP_AUDIO_ID=628ef56e87fbbd0903a0' >> .env
-RUN npm install --quiet
+RUN npm install --legacy-peer-deps --quiet
 RUN npm run build
 EXPOSE ${EXPOSED_PORT}
 RUN npm install serve -g

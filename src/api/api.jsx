@@ -1,26 +1,25 @@
-import { Client, Databases, Account, Storage, Permission, Role } from "appwrite";
+import { Client as Appwrite, Databases, Account, Storage, Permission, Role } from "appwrite";
 
 import { Server } from "../utils/config";
 
 let api = {
   sdk: null,
-  database: null,
-  account: null,
-  storage: null,
 
   provider: () => {
+
     if (api.sdk) {
       return api.sdk;
     }
-    const client = new Client();
-    // console.log("work",Server.endpoint,Server.project);
-    // console.log("work1",appwrite.setEndpoint(Server.endpoint).setProject(Server.project))
-    client.setEndpoint(Server.endpoint).setProject(Server.project);
-    api.sdk = client;
-    api.database = new Databases(client);
-    api.account = new Account(client);
-    api.storage = new Storage(client);
-    return client;
+
+    let appwrite = new Appwrite();
+    appwrite.setEndpoint(Server.endpoint).setProject(Server.project);
+
+    const database = new Databases(appwrite);
+    const account = new Account(appwrite);
+    const storage = new Storage(appwrite);
+
+    api.sdk = { database, account, storage };
+    return api.sdk;
   },
  
   createAccount: (email, password, name) => {
@@ -46,7 +45,7 @@ let api = {
   
   createSession: (email, password) => {
     console.log(email, password);
-    return api.provider().account.createSession(email, password);
+    return api.provider().account.createEmailSession(email, password);
   },
 
   deleteCurrentSession: () => {
@@ -74,7 +73,7 @@ let api = {
   updateDocument: (collectionId, documentId, data, read=Permission.read(Role.any()), write=Permission.update(Role.any()), del=Permission.delete(Role.any()) ) => {
     return api
       .provider()
-      .database.updateDocument(Server.databaseID, collectionId, documentId, data, [read, write, del]);
+      .database.updateDocument(Server.databaseID, collectionId, documentId, Object.fromEntries(Object.entries(data).filter(([k]) => !k.startsWith('$'))), [read, write, del]);
   },
 
   deleteDocument: (collectionId, documentId) => {
