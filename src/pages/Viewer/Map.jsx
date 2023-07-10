@@ -1,4 +1,4 @@
-import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet4";
+import { MapContainer, TileLayer, Marker, FeatureGroup, useMap } from "react-leaflet4";
 import "leaflet/dist/leaflet.css";
 import BackButton from "./components/backButton";
 import { useState, useCallback, useEffect } from "react";
@@ -135,29 +135,44 @@ const Map = ({
           attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.osm.org/{z}/{x}/{y}.png"
         />
-        {hotspots.map((hotspot, index) => {
-          const { latitude, longitude, name, pin_color } = hotspot;
-          return (
-            <Marker
-              key={index}
-              zIndexOffset={-1}
-              title={name}
-              position={[latitude, longitude]}
-              icon={PointIcon((index + 1).toString(), pin_color)}
-              eventHandlers={{
-                click: () => {
-                  setCurrentHotspot(hotspot);
-                  navigate(`/viewer/${projectId}/${hotspot.name}`);
-                },
-              }}
-            ></Marker>
-          );
-        })}
+        <HotspotMarker projectId={projectId} hotspots={hotspots} navigate={navigate} setCurrentHotspot={setCurrentHotspot} />
       </MapContainer>
       <BackButton />
     </div>
   );
 };
+
+const HotspotMarker = ({ projectId, hotspots, navigate, setCurrentHotspot }) => {
+  
+  const map = useMap()
+
+  const adjustMap = useCallback(({ target }) => {
+    map.fitBounds(target.getBounds());
+  }, [map]);
+
+  return (
+    <FeatureGroup eventHandlers={{ add: (e) => adjustMap(e) }}>
+      {hotspots.map((hotspot, idx) => {
+        const { latitude, longitude, name, pin_color } = hotspot;
+        return (
+          <Marker
+            key={idx}
+            zIndexOffset={-1}
+            title={name}
+            position={[latitude, longitude]}
+            icon={PointIcon((idx + 1).toString(), pin_color)}
+            eventHandlers={{
+              click: () => {
+                setCurrentHotspot(hotspot);
+                navigate(`/viewer/${projectId}/${hotspot.name}`);
+              }
+            }}/>
+          );
+      })}
+    </FeatureGroup>
+  );
+};
+
 
 // TODO: This should formated the same naming as GEOJSON
 const PointIcon = (id, IS_GROUPED_HOTSPOT = false, pinColor = undefined) => {

@@ -73,7 +73,7 @@ const Projects = ({ user }) => {
                 {" "}
                 {" "}
                 <button onClick={() => {
-                  navigator.clipboard.writeText('http://glare.cs.kent.edu:3000/viewer/' + project.$id);
+                  navigator.clipboard.writeText(window.location.origin + '/viewer/' + project.$id);
                 }}>
                   Click here to copy the tour link!
                 </button>
