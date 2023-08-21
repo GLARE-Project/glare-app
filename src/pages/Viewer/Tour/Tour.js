@@ -14,6 +14,7 @@ import {
   MenuAlt1Icon,
 } from "@heroicons/react/solid";
 import MenuOverlay from "./MenuItem.jsx";
+import './Tour.css';
 
 const Loader = () => {
   const { active } = useProgress();
