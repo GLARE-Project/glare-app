@@ -22,7 +22,7 @@ export default function App() {
     <>
       <BrowserRouter>
         <Routes>
-          <Route path="viewer/:tourid/*" element={<Viewer />}></Route>
+          {/* <Route path="viewer/:tourid/*" element={<Viewer />}></Route> */}
           <Route
             path="/new-projects"
             element={
