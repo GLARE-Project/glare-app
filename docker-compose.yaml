@@ -9,8 +9,8 @@ services:
       context: ./
       dockerfile: Dockerfile
       args:
-        REPOSITORY_URL: https://github.com/9536240277/glare-app
-        BRANCH_NAME: 89296f5197f53bbe2000b456eedcac9784d8d908
+        REPOSITORY_URL: https://github.com/GLARE-Project/glare-app
+        BRANCH_NAME: 7c704a259d9902d23ec0550c48c6c9946ea92022
         EXPOSED_PORT: 3000
     ports:
       - "3000:3000"
