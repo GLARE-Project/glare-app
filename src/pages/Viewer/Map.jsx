@@ -1,4 +1,4 @@
-import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet4";
+import { MapContainer, TileLayer, Marker, FeatureGroup, useMap } from "react-leaflet4";
 import "leaflet/dist/leaflet.css";
 import BackButton from "./components/backButton";
 import { useState, useCallback, useEffect } from "react";
@@ -9,8 +9,11 @@ import {
   tooCloseHotspotList,
 } from "./utils/gpsManager";
 import MarkerClusterGroup from "react-leaflet-markercluster";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import L from "leaflet";
+// import Tour from "../Viewer/Tour/Tour";
+// import { Server } from "../../utils/config";
+// import api from "../../api/api";
 
 const Map = ({
   onCampus,
@@ -21,16 +24,41 @@ const Map = ({
 }) => {
   const [currentPos, setCurrentPos] = useState([]);
   const [GeoError, setError] = useState(null);
+  const [latitude, setLatitude] = useState(()=> hotspots.map((l) => l.latitude));
+  const [longitude, setLongitude] = useState(()=> hotspots.map((l) => l.longitude));
+  
+  
+  //console.log("projectid--------", projectId);
+
+  // const { tourid } = useParams();
+  // const [project, setProject] = useState({});
+  // const [marker, setMarker] = useState();
 
   const navigate = useNavigate();
-  console.log(hotspots);
+ 
+   console.log("latitude-a", latitude);
+   console.log("longitude-a",longitude);
+  
+  //  useEffect(() => {
+  //   const getProject = async () => {
+  //     let response = await api.getDocument(Server.collectionID, projectId);
+  //     setProject(response);
+  //     console.log("response.hotspots---------",response.hotspots);
+  //     const exisitingHotspots = response.hotspots?.map((h) => JSON.parse(h));
+  //   //  console.log("exisitingHotspots---------",exisitingHotspots);
+  //     await setProject({ ...response, hotspots: exisitingHotspots });
+  //     await setMarker(exisitingHotspots);
+  //   };
+  //   getProject();
+  // }, []);
+  
+  // const initalRegion = {
+  //   lat: latitude,
+  //   lng: longitude,
+  //   zoom: 15,
+  // };
 
-  const initalRegion = {
-    lat: 41.150121,
-    lng: -81.345059,
-    zoom: 18,
-  };
-  const position = [initalRegion.lat, initalRegion.lng];
+  const position = [latitude[0], longitude[0]];
 
   const checkCamera = useCallback(() => {
     // check to see if the devices are undefine
@@ -96,7 +124,7 @@ const Map = ({
     <div>
       <MapContainer
         center={position}
-        zoom={initalRegion.zoom}
+        zoom={15}
         currentPos={currentPos}
         scrollWheelZoom={false}
         className="z-0"
@@ -107,29 +135,44 @@ const Map = ({
           attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.osm.org/{z}/{x}/{y}.png"
         />
-        {hotspots.map((hotspot, index) => {
-          const { latitude, longitude, name, pin_color } = hotspot;
-          return (
-            <Marker
-              key={index}
-              zIndexOffset={-1}
-              title={name}
-              position={[latitude, longitude]}
-              icon={PointIcon((index + 1).toString(), pin_color)}
-              eventHandlers={{
-                click: () => {
-                  setCurrentHotspot(hotspot);
-                  navigate(`/viewer/${projectId}/${hotspot.name}`);
-                },
-              }}
-            ></Marker>
-          );
-        })}
+        <HotspotMarker projectId={projectId} hotspots={hotspots} navigate={navigate} setCurrentHotspot={setCurrentHotspot} />
       </MapContainer>
       <BackButton />
     </div>
   );
 };
+
+const HotspotMarker = ({ projectId, hotspots, navigate, setCurrentHotspot }) => {
+  
+  const map = useMap()
+
+  const adjustMap = useCallback(({ target }) => {
+    map.fitBounds(target.getBounds());
+  }, [map]);
+
+  return (
+    <FeatureGroup eventHandlers={{ add: (e) => adjustMap(e) }}>
+      {hotspots.map((hotspot, idx) => {
+        const { latitude, longitude, name, pin_color } = hotspot;
+        return (
+          <Marker
+            key={idx}
+            zIndexOffset={-1}
+            title={name}
+            position={[latitude, longitude]}
+            icon={PointIcon((idx + 1).toString(), pin_color)}
+            eventHandlers={{
+              click: () => {
+                setCurrentHotspot(hotspot);
+                navigate(`/viewer/${projectId}/${hotspot.name}`);
+              }
+            }}/>
+          );
+      })}
+    </FeatureGroup>
+  );
+};
+
 
 // TODO: This should formated the same naming as GEOJSON
 const PointIcon = (id, IS_GROUPED_HOTSPOT = false, pinColor = undefined) => {

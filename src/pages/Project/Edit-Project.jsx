@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import api from "../../api/api";
 import { Server } from "../../utils/config";
 import { MinusCircleIcon, PlusCircleIcon } from "@heroicons/react/solid";
 import { SaveIcon } from "@heroicons/react/outline";
 import ShortUniqueId from "short-unique-id";
+import { Permission, Role } from "appwrite";
 import Menu from "./Menu";
 import MapField from "./Map";
 import Nav from "../../nav";
@@ -33,8 +34,9 @@ const EditProject = ({ user }) => {
   const [menu, setMenu] = useState([]);
   const { id } = useParams();
   const [saved, setSaved] = useState(true);
-
   const LongLatStep = 0.0001;
+
+  const [library, setLibrary] = useState([]);
 
   useEffect(() => {
     const getProject = async () => {
@@ -81,8 +83,8 @@ const EditProject = ({ user }) => {
   }, [hotspot]);
 
   useEffect(() => {
-    setHotspot({ ...hotspot, main_pages: menu });
-  }, [menu]);
+    setHotspot({ ...hotspot, main_pages: menu, media_pages: library });
+  }, [menu, library]);
 
   const saveProject = () => {
     const update = async () => {
@@ -90,8 +92,9 @@ const EditProject = ({ user }) => {
         Server.collectionID,
         id,
         project,
-        [`role:all`],
-        [`user:${user["$id"]}`]
+        Permission.read(Role.any()),
+        Permission.update(Role.user(user["$id"])),
+        Permission.delete(Role.user(user["$id"]))
       );
     };
     update();
@@ -109,8 +112,9 @@ const EditProject = ({ user }) => {
       let newResponse = await api.createMedia(
         bucket,
         newImage,
-        [`role:all`],
-        [`user:${user["$id"]}`]
+        Permission.read(Role.any()),
+        Permission.update(Role.user(user["$id"])),
+        Permission.delete(Role.user(user["$id"]))
       );
 
       let imageURL = await api.getMedia(bucket, newResponse.$id);
@@ -126,8 +130,9 @@ const EditProject = ({ user }) => {
       let response = await api.createMedia(
         bucket,
         media,
-        [`role:all`],
-        [`user:${user["$id"]}`]
+        Permission.read(Role.any()),
+        Permission.update(Role.user(user["$id"])),
+        Permission.delete(Role.user(user["$id"]))
       );
 
       let imageURL = await api.getMedia(bucket, response.$id);
@@ -139,6 +144,7 @@ const EditProject = ({ user }) => {
   const selectHotspot = (innerHotspot) => {
     setHotspot(innerHotspot);
     setMenu(innerHotspot.main_pages);
+    setLibrary(innerHotspot.media_pages);
     setActiveHotspot(innerHotspot);
   };
 
@@ -204,14 +210,60 @@ const EditProject = ({ user }) => {
       let response = await api.createMedia(
         bucket,
         media,
-        [`user:${user["$id"]}`],
-        [`user:${user["$id"]}`]
+        Permission.read(Role.user(user["$id"])),
+        Permission.update(Role.user(user["$id"])),
+        Permission.delete(Role.user(user["$id"]))
       );
 
       let imageURL = await api.getMedia(bucket, response.$id);
       setMenu((current) =>
         current.map((obj) => {
           if (obj.menu_id === key) {
+            return { ...obj, [object]: imageURL };
+          }
+          return obj;
+        })
+      );
+    };
+    upload();
+  };
+
+  const newLibraryItem = () => {
+    const libraryItem = {
+      title: "New Library Item",
+      background_image: "",
+      descriptive_audio: "",
+      library_id: uid(),
+    };
+
+    setLibrary([...library, libraryItem]);
+  };
+
+  const updateLibrary = (key, value, object) => {
+    setLibrary((current) =>
+      current.map((obj) => {
+        if (obj.library_id === key) {
+          return { ...obj, [object]: value };
+        }
+        return obj;
+      })
+    );
+  };
+
+  const updateLibraryMedia = (bucket, media, object, key) => {
+    const upload = async () => {
+      let response = await api.createMedia(
+        bucket,
+        media,
+        Permission.read(Role.user(user["$id"])),
+        Permission.update(Role.user(user["$id"])),
+        Permission.delete(Role.user(user["$id"]))
+      );
+
+      let imageURL = await api.getMedia(bucket, response.$id);
+      setLibrary((current) =>
+        current.map((obj) => {
+          if (obj.library_id === key) {
             return { ...obj, [object]: imageURL };
           }
           return obj;
@@ -237,6 +289,22 @@ const EditProject = ({ user }) => {
     };
     setHotspot(newAnswer);
   };
+
+ // const collectionID= Server.collectionID;
+  // const documentId = project.id;
+ // console.log("collectionID-------", Server.collectionID,);
+ // console.log("id-------",id);
+
+  const history = useNavigate();
+   
+  const deleteDocument = async () => {
+    await api.deleteDocument(Server.collectionID, id);
+    history("/projects");
+  };
+
+  // 41.14660588613492
+  // -81.34747253365593
+ //console.log("projectssss-------", project);
 
   return (
     <>
@@ -326,6 +394,14 @@ const EditProject = ({ user }) => {
             </div>
           </div>
         </div>
+
+        <div className="border rounded-full shadow-lg w-40 text-center">
+        <button className="hover:text-red-500 font-bold text-center" onClick={() => deleteDocument()}>
+            Delete Project
+        </button>
+        </div>
+
+          
         <div className="flex gap-4 pt-4">
           <div className="w-[30%] border-2 rounded-lg p-3">
             <div className="flex items-center justify-between">
@@ -620,6 +696,137 @@ const EditProject = ({ user }) => {
                   </div>
                 </div>
               </div>
+             
+
+             {/* library item------ */}
+
+              <div className="p-3 mt-4 border-2 rounded-lg">
+                <div className="flex items-center justify-between">
+                    <p className="text-xl font-bold uppercase">Library Content</p>
+                    <button onClick={() => newLibraryItem()}>
+                      <PlusCircleIcon className="w-6 hover:text-blue-400" />
+                    </button>
+                </div>
+                <div className="grid grid-cols-1 gap-2 pt-6">
+                  <div className="accordion" id="accordionExample">
+                    {library?.map((innerLib) => (
+                      <div
+                        key={innerLib.library_id}
+                        className="bg-white border border-gray-200 accordion-item"
+                      >
+                        <h2
+                          className="mb-0 accordion-header"
+                          id={"heading_" + innerLib.library_id}
+                        >
+                          <button
+                            className="relative flex items-center w-full px-5 py-4 text-base text-left text-gray-800 transition bg-white border-0 rounded-none accordion-button focus:outline-none"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target={"#collapse_" + innerLib.library_id}
+                            aria-expanded="false"
+                            aria-controls="collapseOne"
+                          >
+                            {innerLib.title}
+                          </button>
+                        </h2>
+                        <div
+                          id={"collapse_" + innerLib.library_id}
+                          className="accordion-collapse collapse"
+                          aria-labelledby={"heading_" + innerLib.library_id}
+                          data-bs-parent="#accordionExample"
+                        >
+                          <div className="px-5 py-4 accordion-body">
+                            <input
+                              type="text"
+                              className="w-full px-4 py-2 my-2 text-xl transition duration-200 ease-in-out transform border rounded-lg shadow-md focus:ring-2 focus:ring-gray-800 hover:shadow-xl"
+                              placeholder="Menu Title"
+                              value={innerLib.title}
+                              onChange={(e) =>
+                                updateLibrary(
+                                  innerLib.library_id,
+                                  e.target.value,
+                                  "title"
+                                )
+                              }
+                            ></input>
+                            
+                            <p className="pl-2 text-sm text-gray-600">
+                              Background Image
+                            </p>
+                            {innerLib.background_image ? (
+                              <img
+                                className="w-full my-4 border rounded-lg shadow-lg"
+                                src={innerLib.background_image}
+                                alt=''
+                              />
+                            ) : (
+                              <></>
+                            )}
+                            <input
+                              type="file"
+                              id="background_image"
+                              accept="image/*"
+                              name="background_image"
+                              className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-sky-50 file:text-sky-700 hover:file:bg-sky-100"
+                              onChange={(e) =>
+                                updateLibraryMedia(
+                                  Server.imageBucketID,
+                                  e.target.files[0],
+                                  "background_image",
+                                  innerLib.library_id
+                                )
+                              }
+                            />
+                            <p className="py-3 pl-2 text-sm text-gray-600">
+                              Narration Audio
+                            </p>
+                            {innerLib.descriptive_audio ? (
+                              <audio
+                                className="rounded-full shadow-lg border mb-4 w-[100%]"
+                                controls
+                              >
+                                <source src={innerLib.descriptive_audio} />
+                              </audio>
+                            ) : (
+                              <></>
+                            )}
+                            <input
+                              type="file"
+                              id="start_audio"
+                              accept="audio/*"
+                              name="start_audio"
+                              className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-sky-50 file:text-sky-700 hover:file:bg-sky-100"
+                              onChange={(e) =>
+                                updateLibraryMedia(
+                                  Server.audioBucketID,
+                                  e.target.files[0],
+                                  "descriptive_audio",
+                                  innerLib.library_id
+                                )
+                              }
+                            />
+                            <button
+                              className="flex items-center gap-1 px-4 py-2 mx-auto mt-4 font-semibold text-gray-900 bg-white border border-gray-900 rounded-lg shadow-md text-md hover:border-transparent hover:text-white hover:bg-gray-900 focus:outline-none"
+                              onClick={() =>
+                                setLibrary((lib) =>
+                                lib.filter(
+                                    (i) => i.library_id !== innerLib.library_id
+                                  )
+                                )
+                              }
+                            >
+                              <MinusCircleIcon className="w-5 hover:text-red-500" />{" "}
+                              Delete
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+
             </div>
 
             <div>
@@ -670,6 +877,8 @@ const EditProject = ({ user }) => {
           </div>
           ) : <></> }
         </div>
+
+       
       </div>
     </>
   );

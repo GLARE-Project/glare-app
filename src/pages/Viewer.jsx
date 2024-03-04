@@ -22,9 +22,9 @@ const Viewer = () => {
     const getProject = async () => {
       let response = await api.getDocument(Server.collectionID, tourid);
       setProject(response);
-      console.log(response.hotspots);
+   //   console.log("response.hotspots---------",response.hotspots);
       const exisitingHotspots = response.hotspots?.map((h) => JSON.parse(h));
-      console.log(exisitingHotspots);
+    //  console.log("exisitingHotspots---------",exisitingHotspots);
       await setProject({ ...response, hotspots: exisitingHotspots });
       await setHotspots(exisitingHotspots);
     };
@@ -33,6 +33,7 @@ const Viewer = () => {
 
   const setCurrentHotspot = (clickedHotspot) => {
     setHotspot(clickedHotspot);
+   // console.log("setCurrentHotspot---------",clickedHotspot);
   };
 
   const checkCamera = useCallback(() => {

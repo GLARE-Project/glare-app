@@ -10,6 +10,8 @@ import EditProject from "./pages/Project/Edit-Project";
 import Viewer from "./pages/Viewer";
 import Intro from "./pages/Viewer/Intro";
 import Nav from "./nav";
+import ForgetPassword from "./pages/Login/ForgetPassword";
+import ResetPassword from "./pages/Login/ResetPassword";
 
 export default function App() {
   // eslint-disable-next-line
@@ -20,7 +22,7 @@ export default function App() {
     <>
       <BrowserRouter>
         <Routes>
-          <Route path="viewer/:tourid/*" element={<Viewer />}></Route>
+          {/* <Route path="viewer/:tourid/*" element={<Viewer />}></Route> */}
           <Route
             path="/new-projects"
             element={
@@ -91,6 +93,21 @@ export default function App() {
               </Nav>
             }
           ></Route>
+
+          <Route
+            path="/forgot-password"
+            element={
+              <ForgetPassword />
+            }
+          ></Route>
+
+          <Route
+            path="/reset-password"
+            element={
+              <ResetPassword />
+            }
+          ></Route>
+
         </Routes>
       </BrowserRouter>
     </>

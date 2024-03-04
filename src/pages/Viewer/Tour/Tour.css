@@ -1,0 +1,27 @@
+body, html, .root, canvas, video {
+    margin: 0;
+    padding: 0;
+}
+
+#container {
+    z-index: 10;
+    height: 100vh;
+    width: 100vw;
+    background-color: black;
+}
+
+#canvas {
+    position: absolute !important;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100vw;
+    z-index: 2;
+}
+
+#videoElement {
+    width: 100%;
+    left: 0;
+    position: fixed;
+    z-index: 1; /* Specify a stack order in case you're using a different order for other elements */
+}

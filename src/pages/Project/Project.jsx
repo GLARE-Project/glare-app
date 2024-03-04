@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import { Permission, Role } from "appwrite";
 import api from "../../api/api";
 import { FetchState, useGetProjects } from "../../hooks";
 import Nav from "../../nav";
@@ -14,20 +15,12 @@ const Project = ({ user, dispatch, project, setProject }) => {
   const [audio, setAudio] = useState();
 
   const navigate = useNavigate();
+  
+  const isValidProject = useMemo(() => currentProject.hasOwnProperty('project_name') &&
+    currentProject.project_name.trim().length > 0 && currentProject.project_name, [currentProject]);
 
   const handleAddProject = async (e) => {
     e.preventDefault();
-
-    // console.log(image);
-
-    let response = await api.createMedia(
-      Server.imageBucketID,
-      image,
-      [`role:all`],
-      [`user:${user["$id"]}`]
-    );
-
-    let imageURL = await api.getMedia(Server.imageBucketID, response.$id);
 
     const hotspot = JSON.stringify({
       name: "",
@@ -48,48 +41,62 @@ const Project = ({ user, dispatch, project, setProject }) => {
     });
     
 
-    const imageP = { ...currentProject, homepage_image: imageURL.href, hotspots: [hotspot] };
+  let currentData = { ...currentProject, hotspots: [hotspot] };
 
-    console.log(imageP);
+  if (!isValidProject) return;
 
-    let response2 = await api.createMedia(
-      Server.audioBucketID,
-      audio,
-      [`role:all`],
-      [`user:${user["$id"]}`]
+  if (image != undefined) {
+    let createImgResp = await api.createMedia(
+      Server.imageBucketID,
+      image,
+      Permission.read(Role.any()),
+      Permission.update(Role.user(user["$id"])),
+      Permission.delete(Role.user(user["$id"]))
+    );
+    let imageURL = await api.getMedia(Server.imageBucketID, createImgResp.$id);
+    currentData = { ...currentData, homepage_image: imageURL.href}
+  }
+
+  if (audio != undefined) {
+      let createAudioResp = await api.createMedia(
+        Server.audioBucketID,
+        audio,
+        Permission.read(Role.any()),
+        Permission.update(Role.user(user["$id"])),
+        Permission.delete(Role.user(user["$id"]))
+      );
+      let audioURL = await api.getMedia(Server.audioBucketID, createAudioResp.$id);
+      currentData = { ...currentData, intro_audio: audioURL.href}
+  }
+
+  setCurrentProject(currentData);
+
+  console.log("Adding Project");
+  try {
+    let docRespo = await api.createDocument(
+      Server.collectionID,
+      currentData,
+      Permission.read(Role.any()),
+      Permission.update(Role.user(user["$id"])),
+      Permission.delete(Role.user(user["$id"]))
     );
 
-    let audioURL = await api.getMedia(Server.audioBucketID, response2.$id);
+    setCurrentProject({ ...currentProject, project_id: docRespo.$id });
+    setProject(docRespo.$id);
 
-    const audioP = { ...imageP, intro_audio: audioURL.href };
+    api.updateDocument(
+      Server.collectionID,
+      currentProject,
+      Permission.read(Role.any()),
+      Permission.update(Role.user(user["$id"])),
+      Permission.delete(Role.user(user["$id"]))
+    );
+    setStale({ stale: true });
+    navigate(`/edit/${docRespo.$id}`);
+  } catch (e) {
+    console.log("Error in adding project");
+  }
 
-    setCurrentProject(audioP);
-
-    console.log("Adding Project");
-    const data = audioP;
-    // console.log(data, user);
-    try {
-      let docRespo = await api.createDocument(
-        Server.collectionID,
-        data,
-        [`role:all`],
-        [`user:${user["$id"]}`]
-      );
-
-      setCurrentProject({ ...currentProject, project_id: docRespo.$id });
-      setProject(docRespo.$id);
-
-      api.updateDocument(
-        Server.collectionID,
-        currentProject,
-        [`role:all`],
-        [`user:${user["$id"]}`]
-      );
-      setStale({ stale: true });
-      navigate(`/edit/${docRespo.$id}`);
-    } catch (e) {
-      console.log("Error in adding project");
-    }
   };
 
   const createProject = (project) => {
@@ -118,12 +125,12 @@ const Project = ({ user, dispatch, project, setProject }) => {
           <div className="text-3xl font-bold md:text-5xl lg:text-6xl">
             📝 <br /> &nbsp; Create a New Project
           </div>
-
-          <form onSubmit={handleAddProject}>
+          {isLoading ? (<h1> Loading .... </h1>) :(
+            <form onSubmit={handleAddProject}>
             <input
               type="text"
               className="w-full px-6 py-4 my-8 text-xl transition duration-200 ease-in-out transform border-0 rounded-lg shadow-md focus:ring-2 focus:ring-gray-800 hover:-translate-y-1 hover:scale-110 hover:shadow-xl"
-              placeholder="Project Name"
+              placeholder="Project Name (required)"
               value={currentProject.project_name}
               onChange={(e) => createProject(e.target.value)}
             ></input>
@@ -176,12 +183,12 @@ const Project = ({ user, dispatch, project, setProject }) => {
             </div>
 
             <input
+              disabled={!isValidProject}
               type="submit"
               className="px-12 py-3 mx-auto mt-4 font-semibold text-gray-900 bg-white border border-gray-900 rounded-lg shadow-md text-md hover:border-transparent hover:text-white hover:bg-gray-900 focus:outline-none"
             />
           </form>
-
-          {isLoading && <h1> Loading .... </h1>}
+          )}
         </div>
       </section>
 
