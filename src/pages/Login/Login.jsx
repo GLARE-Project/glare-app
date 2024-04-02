@@ -4,6 +4,8 @@ import SignUp from "./SignUp";
 import { FetchState } from "../../hooks";
 //import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 const Login = ({ dispatch }) => {
@@ -19,7 +21,33 @@ const Login = ({ dispatch }) => {
       const data = await api.getAccount();
     //  console.log("data-------------",data.password);
       dispatch({ type: FetchState.FETCH_SUCCESS, payload: data });
-    } catch (e) {
+    } catch (error) {
+      if (error.response && error.response.status === 500) {
+        // Server error
+        toast.error('Server error. Please try again later.', {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+      }
+      else{
+        // Credential error
+        toast.error("Incorrect email or password. Please try again!", {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+      }
       dispatch({ type: FetchState.FETCH_FAILURE });
     }
   };
