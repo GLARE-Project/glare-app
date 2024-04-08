@@ -13,6 +13,7 @@ const Projects = ({ user }) => {
   
  // console.log(user);
   const [projects, setProjects] = useState([]);
+  const [copied, setCopied] = useState(false);
 
   // console.log("projectssss-----",projects);
    
@@ -72,10 +73,14 @@ const Projects = ({ user }) => {
               <p className="mt-6">
                 {" "}
                 {" "}
-                <button onClick={() => {
-                  navigator.clipboard.writeText(window.location.origin + '/viewer/' + project.$id);
-                }}>
-                  Click here to copy the tour link!
+                <button 
+                  onClick={() => {
+                    navigator.clipboard.writeText(window.location.origin + '/viewer/' + project.$id);
+                    setCopied(true); // Set copied to true when the button is clicked
+                  }}
+                  className={copied ? 'copiedButtonStyle' : 'originalButtonStyle'} // Apply different styles based on copied state
+                >
+                  {copied ? 'Link Copied!' : 'Click here to copy the tour link!'}
                 </button>
               </p>
             </div>

@@ -9,16 +9,30 @@ services:
       context: ./
       dockerfile: Dockerfile
       args:
-        REPOSITORY_URL: https://github.com/9536240277/glare-app
-        BRANCH_NAME: 89296f5197f53bbe2000b456eedcac9784d8d908
-        EXPOSED_PORT: 3000
+        REPOSITORY_URL: https://github.com/GLARE-Project/glare-app
+        BRANCH_NAME: 43be142de9026b2487b52dd9a8c5ff6f07f88325
+        EXPOSED_PORT: 8090
     ports:
-      - "3000:3000"
+      - "8090:8090"
     environment:
       env_file: config.env
     networks:
       - appwrite
     stdin_open: true
+  nginx:
+    image: nginx:latest
+    ports:
+        - '443:443'
+        - '3000:3000'
+    restart: always
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - /etc/letsencrypt/live/glare.cs.kent.edu/fullchain.pem:/etc/nginx/key.pem:ro
+      - /etc/letsencrypt/live/glare.cs.kent.edu/privkey.pem:/etc/nginx/private.pem:ro
+      - /var/www/glare.cs.kent.edu/public_html:/usr/share/nginx/html:ro
+    depends_on:
+      - frontend
+
 
 networks:
     appwrite:
