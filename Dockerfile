@@ -3,7 +3,7 @@ ARG BRANCH_NAME
 ARG EXPOSED_PORT
 ARG BASE_WORKDIR="/app"
 
-FROM node:lts-alpine
+FROM node:16-alpine
 
 # arguments used outside of a build stage
 ARG REPOSITORY_URL
