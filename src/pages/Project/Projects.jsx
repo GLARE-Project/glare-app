@@ -47,6 +47,13 @@ const Projects = ({ user }) => {
     getStuff();
   }, []);
 
+  const openViewerWindow = (projectId) => {
+    const viewerWindow = window.open('/viewer/' + projectId, '_blank');
+    if (viewerWindow) {
+      viewerWindow.location.reload(); // Reload the viewer window if it's successfully opened
+    }
+  };
+
   return (
     <>
       <div className="grid grid-cols-2 w-[90vw] mx-auto mt-10 md:grid-cols-4 gap-4">
@@ -64,8 +71,8 @@ const Projects = ({ user }) => {
                 </Link>
                 <Link
                   className="py-2 px-4 font-semibold text-md rounded-lg shadow-md bg-white text-gray-900 border border-gray-900 hover:border-transparent hover:text-white hover:bg-gray-900 focus:outline-none"
-                  to={"/viewer/" + project.$id}
-                  onClick={() => window.location.reload()} // Reload the page when View button is clicked
+                  onClick={() => openViewerWindow(project.$id)}
+                  
                 >
                   View
                 </Link>
