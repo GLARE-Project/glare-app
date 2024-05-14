@@ -8,7 +8,7 @@ import "../../App.css";
 const HotspotMarker = ({ position, color }) => {
   const icon = new L.Icon({
     // see more at https://developers.google.com/chart/image/docs/gallery/dynamic_icons#plain_pin
-    iconUrl: `https://chart.googleapis.com/chart?chst=d_map_spin&chld=.6|0|${color}|16|b|X`,
+    iconUrl: `https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png`,
     iconSize: [23, 41],
   });
 

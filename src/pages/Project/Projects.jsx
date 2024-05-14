@@ -64,7 +64,7 @@ const Projects = ({ user }) => {
                 </Link>
                 <Link
                   className="py-2 px-4 font-semibold text-md rounded-lg shadow-md bg-white text-gray-900 border border-gray-900 hover:border-transparent hover:text-white hover:bg-gray-900 focus:outline-none"
-                  to={"/viewer/" + project.$id}
+                  to={"/viewer/" + project.$id + "/"}
                 >
                   View
                 </Link>
