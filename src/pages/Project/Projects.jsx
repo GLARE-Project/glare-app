@@ -3,7 +3,7 @@ import api from "../../api/api";
 import { FetchState, useGetProjects } from "../../hooks";
 import { Server } from "../../utils/config";
 import Alert from "../Alert/Alert";
-import {useParams, Link } from "react-router-dom";
+import {useParams, Link, useNavigate } from "react-router-dom";
 import Nav from "../../nav";
 const { Query } = require("appwrite");
 
@@ -14,6 +14,7 @@ const Projects = ({ user }) => {
  // console.log(user);
   const [projects, setProjects] = useState([]);
   const [copied, setCopied] = useState(false);
+  const navigate = useNavigate();
 
   // console.log("projectssss-----",projects);
    
@@ -47,13 +48,6 @@ const Projects = ({ user }) => {
     getStuff();
   }, []);
 
-  const openViewerWindow = (projectId) => {
-    const viewerWindow = window.open('/viewer/' + projectId, '_blank');
-    if (viewerWindow) {
-      viewerWindow.location.reload(); // Reload the viewer window if it's successfully opened
-    }
-  };
-
   return (
     <>
       <div className="grid grid-cols-2 w-[90vw] mx-auto mt-10 md:grid-cols-4 gap-4">
@@ -69,13 +63,14 @@ const Projects = ({ user }) => {
                 >
                   Edit Project
                 </Link>
-                <Link
+                <button
                   className="py-2 px-4 font-semibold text-md rounded-lg shadow-md bg-white text-gray-900 border border-gray-900 hover:border-transparent hover:text-white hover:bg-gray-900 focus:outline-none"
-                  onClick={() => openViewerWindow(project.$id)}
-                  
+                  onClick={() => {
+                    navigate("/viewer/" + project.$id);
+                  }}
                 >
                   View
-                </Link>
+                </button>
                 
               </div>
               <p className="mt-6">
