@@ -17,19 +17,24 @@ const Viewer = () => {
   const [onCampus, setOnCampus] = useState();
   const [hotspot, setHotspot] = useState();
   const [page, setPage] = useState();
+  const [loading, setLoading] = useState(true); // Loading state
 
   useEffect(() => {
     const getProject = async () => {
-      let response = await api.getDocument(Server.collectionID, tourid);
-      setProject(response);
-   //   console.log("response.hotspots---------",response.hotspots);
-      const exisitingHotspots = response.hotspots?.map((h) => JSON.parse(h));
-    //  console.log("exisitingHotspots---------",exisitingHotspots);
-      await setProject({ ...response, hotspots: exisitingHotspots });
-      await setHotspots(exisitingHotspots);
+      setLoading(true); // Start loading
+      try {
+        let response = await api.getDocument(Server.collectionID, tourid);
+        const exisitingHotspots = response.hotspots?.map((h) => JSON.parse(h));
+        setProject({ ...response, hotspots: exisitingHotspots });
+        setHotspots(exisitingHotspots);
+      } catch (error) {
+        console.error("Failed to fetch project data", error);
+      } finally {
+        setLoading(false); // Stop loading
+      }
     };
     getProject();
-  }, []);
+  }, [tourid]);
 
   const setCurrentHotspot = (clickedHotspot) => {
     setHotspot(clickedHotspot);
@@ -75,6 +80,10 @@ const Viewer = () => {
       setOnCampus(false);
     }
   }, [setOnCampus]);
+
+  if (loading) {
+    return <div>Loading...</div>; // Display loading message
+  }
 
   return (
     <>

@@ -75,6 +75,18 @@ export default function App() {
             }
           ></Route>
           <Route
+            path="/viewer/:projectId"
+            element={
+              user ? (
+                <Nav>
+                  <Viewer user={user} />
+                </Nav>
+              ) : (
+                <Navigate to="/login" replace />
+              )
+            }
+          ></Route>
+          <Route
             path="/login"
             element={
               user ? (
