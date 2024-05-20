@@ -1,9 +1,10 @@
+
 import { useState, useEffect } from "react";
 import api from "../../api/api";
 import { FetchState, useGetProjects } from "../../hooks";
 import { Server } from "../../utils/config";
 import Alert from "../Alert/Alert";
-import {useParams, Link, useNavigate } from "react-router-dom";
+import {useParams, Link } from "react-router-dom";
 import Nav from "../../nav";
 const { Query } = require("appwrite");
 
@@ -14,7 +15,6 @@ const Projects = ({ user }) => {
  // console.log(user);
   const [projects, setProjects] = useState([]);
   const [copied, setCopied] = useState(false);
-  const navigate = useNavigate();
 
   // console.log("projectssss-----",projects);
    
@@ -63,14 +63,12 @@ const Projects = ({ user }) => {
                 >
                   Edit Project
                 </Link>
-                <button
+                <Link
                   className="py-2 px-4 font-semibold text-md rounded-lg shadow-md bg-white text-gray-900 border border-gray-900 hover:border-transparent hover:text-white hover:bg-gray-900 focus:outline-none"
-                  onClick={() => {
-                    navigate("/viewer/" + project.$id);
-                  }}
+                  to={"/viewer/" + project.$id}
                 >
                   View
-                </button>
+                </Link>
                 
               </div>
               <p className="mt-6">

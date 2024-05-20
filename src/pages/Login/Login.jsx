@@ -12,18 +12,21 @@ const Login = ({ dispatch }) => {
   const [password, setPassword] = useState();
   const [register, setRegister] = useState(false);
   const [loginError, setLoginError] = useState("");
+  const [loading, setLoading] = useState(false); // Loading state
 
   const handleLogin = async (e) => {
     e.preventDefault();
     dispatch({ type: FetchState.FETCH_INIT });
+    setLoading(true); // Start loading
     try {
       await api.createSession(email, password);
       const data = await api.getAccount();
-    //  console.log("data-------------",data.password);
       dispatch({ type: FetchState.FETCH_SUCCESS, payload: data });
     } catch (e) {
       dispatch({ type: FetchState.FETCH_FAILURE });
       setLoginError("Invalid email or password. Please try again.");
+    } finally {
+      setLoading(false); // Stop loading
     }
   };
   
@@ -77,6 +80,7 @@ let navigate = useNavigate();
           />
 
           {loginError && <p className="text-red-500 mt-2">{loginError}</p>}
+          {loading && <p className="text-blue-500 mt-2">Logging in...</p>} {/* Loading message */}
           <div className="mt-6">
             <button
               type="submit"
