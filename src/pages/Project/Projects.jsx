@@ -66,6 +66,12 @@ const Projects = ({ user }) => {
                 <Link
                   className="py-2 px-4 font-semibold text-md rounded-lg shadow-md bg-white text-gray-900 border border-gray-900 hover:border-transparent hover:text-white hover:bg-gray-900 focus:outline-none"
                   to={"/viewer/" + project.$id}
+                  onClick={() => {
+                    // Refresh the page after navigation
+                    setTimeout(() => {
+                      window.location.reload();
+                    }, 100); // Adjust delay as needed
+                  }}
                 >
                   View
                 </Link>
